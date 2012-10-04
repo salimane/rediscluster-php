@@ -5,7 +5,7 @@ php:
   - 5.4
   
 before_script:
-  - sed -i 's/[0-9]\)/\)/g' Tests/config.php
+  - sed -i 's/6379[0-9]/6379/g' Tests/config.php
   - sh bin/travis-init.sh
   
 services:
