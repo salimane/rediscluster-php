@@ -6,3 +6,6 @@ php:
   
 before_script:
   - sh bin/travis-init.sh
+  
+services:
+  - redis-server
