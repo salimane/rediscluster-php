@@ -720,7 +720,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase {
 		// real logic
 		$members = array('a1', 'a2', 'a3');
 		$this->make_set('a', $members);
-		$this->assertEquals($this->client->smembers('a'), $members);
+		$actual = $this->client->smembers('a');
+		sort($actual);
+		$this->assertEquals($actual, $members);
 	}
 
   function test_scard() {
@@ -741,7 +743,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase {
 		$this->client->del('b');
 		// real logic
 		$this->make_set('b', array('b1', 'a2', 'b3'));
-		$this->assertEquals($this->client->sdiff('a', 'b'), array('a1', 'a3'));
+		$actual = $this->client->sdiff('a', 'b');
+		sort($actual);
+		$this->assertEquals($actual, array('a1', 'a3'));
   }
 
   function test_sdiffstore() {
@@ -755,7 +759,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase {
 		// test for that
 		// real logic
 		$this->assertEquals($this->client->sdiffstore('c', 'a', 'b'), 2);
-		$this->assertEquals($this->client->smembers('c'), array('a1', 'a3'));
+		$actual = $this->client->smembers('c');
+		sort($actual);
+		$this->assertEquals($actual, array('a1', 'a3'));
 	}
 
   function test_sinter() {
@@ -766,7 +772,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase {
 		$this->client->del('b');
 		// real logic
 		$this->make_set('b', array('a1', 'b2', 'a3'));
-		$this->assertEquals($this->client->sinter('a', 'b'), array('a1', 'a3'));
+		$actual = $this->client->sinter('a', 'b');
+		sort($actual);
+		$this->assertEquals($actual, array('a1', 'a3'));
 	}
 
   function test_sinterstore() {
@@ -780,7 +788,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase {
 		// test for that
 		// real logic
 		$this->assertEquals($this->client->sinterstore('c', 'a', 'b'), 2);
-		$this->assertEquals($this->client->smembers('c'), array('a1', 'a3'));
+		$actual = $this->client->smembers('c');
+		sort($actual);
+		$this->assertEquals($actual, array('a1', 'a3'));
 	}
 
   function test_sismember() {
@@ -887,7 +897,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase {
 		$this->client->del('b');
 		// real logic
 		$this->make_set('b', array('a1', 'b2', 'a3'));
-		$this->assertEquals($this->client->sunion('a', 'b'), array('a1', 'a2', 'a3', 'b2'));
+		$actual = $this->client->sunion('a', 'b');
+		sort($actual);
+		$this->assertEquals($actual, array('a1', 'a2', 'a3', 'b2'));
 	}
 
 	function test_sunionstore() {
