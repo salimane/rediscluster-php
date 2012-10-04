@@ -1,0 +1,30 @@
+{
+    "name":         "rediscluster/rediscluster",
+    "type":         "library",
+    "description":  "a php interface to a Cluster of Redis key-value store",
+    "keywords":     ["rediscluster", "redis", "nosql", "cluster", "key value", "data store", "database", "sharding", "phpredis"],
+    "homepage":     "https://github.com/salimane/rediscluster-php",
+    "license":      "MIT",
+    "authors":[
+        {
+            "name":     "Salimane Adjao Moustapha",
+            "email":    "me@salimane.com",
+            "homepage": "http://salimane.com",
+            "role":     "Developer"
+        }
+    ],
+    "support": {
+        "email": "me@salimane.com",
+        "issues": "https://github.com/salimane/rediscluster-php/issues",
+        "source": "https://github.com/salimane/rediscluster-php"
+    },
+    "require":{
+        "php": ">=5.3.0"
+    },
+    "version": "0.1.0",
+    "autoload": {
+        "psr-0": {
+            "RedisCluster": "src/"
+        }
+    }
+}
