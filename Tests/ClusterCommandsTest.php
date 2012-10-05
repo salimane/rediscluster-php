@@ -29,13 +29,19 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase {
 
   // GENERAL SERVER COMMANDS
   function test_dbsize() {
+    global $cluster;
     $this->client->set('a', 'foo');
     $this->client->set('b', 'foo');
     $sizeno = 0;
+    $sizearr = array();
     $dbsize = $this->client->dbsize();
-    foreach($dbsize as $size)
-      $sizeno += $size;
-    $this->assertEquals($sizeno, 2 * $this->client->no_servers);
+    foreach($dbsize as $node => $size) {
+      if (!isset($sizearr[$cluster['nodes'][$node]['host'].$cluster['nodes'][$node]['port']]) && $size) {
+        $sizeno += $size;
+        $sizearr[$cluster['nodes'][$node]['host'].$cluster['nodes'][$node]['port']] = $size;
+      }
+    }
+    $this->assertEquals($sizeno, 2 * count($sizearr));
   }
 
   function test_getnodefor () {
@@ -66,7 +72,8 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase {
 
 	function test_hash_tag() {
 	  $this->client->set('bar{foo}', 'bar');
-	  $this->assertEquals($this->client->get('bar'), false);
+	  if (array_values($this->client->getnodefor('foo')) != array_values($this->client->getnodefor('bar')))
+	    $this->assertEquals($this->client->get('bar'), false);
 	  $this->assertEquals($this->client->get('bar{foo}'), 'bar');
 	  //checking bar on the right node
 	  $node = $this->client->getnodefor('foo');
@@ -95,19 +102,24 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase {
   }
 
   function test_info() {
-		$this->client->set('a', 'foo');
-		$this->client->set('b', 'foo');
-		$kno = 0;
-		$infos = $this->client->info();
-		foreach($infos as $info){
-			$this->assertTrue(is_array($info));
-			if (!empty($info['db4'])) {
-			  list($keys) = explode(',', $info['db4']);
-			  list($k, $v) = explode('=', $keys);
-			  $kno += $v;
-			}
-		}
-		$this->assertEquals($kno, 2 * $this->client->no_servers);
+    global $cluster;
+    $this->client->set('a', 'foo');
+    $this->client->set('b', 'foo');
+    $kno = 0;
+    $knoarr = array();
+    $infos = $this->client->info();
+    foreach($infos as $node => $info){
+      $this->assertTrue(is_array($info));
+      if (!empty($info['db4'])) {
+        list($keys) = explode(',', $info['db4']);
+        list($k, $v) = explode('=', $keys);
+        if (!isset($knoarr[$cluster['nodes'][$node]['host'].$cluster['nodes'][$node]['port']]) && $v) {
+          $kno += $v;
+          $knoarr[$cluster['nodes'][$node]['host'].$cluster['nodes'][$node]['port']] = $v;
+        }
+      }
+    }
+    $this->assertEquals($kno, 2 * count($knoarr));
   }
 
   function test_lastsave() {
