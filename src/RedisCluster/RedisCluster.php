@@ -164,6 +164,7 @@ class RedisCluster {
     //connect to all servers
     foreach ($cluster['nodes'] as $alias => $server) {
       $this->__redis = new \Redis();
+      $sla = null;
       try {
         $this->__redis->pconnect($server['host'], $server['port']);
         $sla = $this->__redis->config('GET', 'slaveof');
@@ -195,12 +196,12 @@ class RedisCluster {
                 $this->__redis->select($redisdb);
               }
               catch(\RedisException $e) {
-                error_log("RedisCluster cannot connect to: " . $cluster['nodes'][$ms]['host'] .':'. $cluster['nodes'][$ms]['port'] . " " . $e->getMessage(), 0); die();
+                error_log("RedisCluster cannot connect to: " . $cluster['nodes'][$ms]['host'] .':'. $cluster['nodes'][$ms]['port'] . " " . $e->getMessage(), 0);
               }
             }
             $this->redises[$alias] =  $this->__redis;
           } else {
-            error_log("RedisCluster cannot connect to: " . $server['host'] .':'. $server['port'] . " " . $e->getMessage(), 0); die();
+            error_log("RedisCluster cannot connect to: " . $server['host'] .':'. $server['port'] . " " . $e->getMessage(), 0);
           }
         }
       }
@@ -233,7 +234,7 @@ class RedisCluster {
    * @param array $args Array of supplied arguments to the method.
    * @return mixed Return value from Redis::__call() based on the command.
    */
-  function __call($name, $args){
+  public function __call($name, $args){
     if (!isset(self::$loop_keys[$name])) {
       $tag_start = false;
       is_string($args[0]) && $tag_start = strrpos($args[0], '{');
@@ -280,7 +281,7 @@ class RedisCluster {
           return call_user_func_array(array($redisent, $name), $args);
 
       } catch(\RedisException $e) {
-        error_log("RedisCluster: " . $e->getMessage()." on $name on " . $this->cluster['nodes']['node_' . $node]['host'] .':'. $this->cluster['nodes']['node_' . $node]['port'], 0);
+        error_log("RedisCluster: " . $e->getMessage()." on $name on " . $this->cluster['nodes'][$node]['host'] .':'. $this->cluster['nodes'][$node]['port'], 0);
         return null;
       }
     }
@@ -296,7 +297,7 @@ class RedisCluster {
             $res = call_user_func_array(array($redisent, $name), $args);
           }
         } catch(\RedisException $e) {
-          error_log("RedisCluster __call function: " . $e->getMessage() . " on $name on " . $this->cluster['nodes']['node_' . $node]['host'] .':'. $this->cluster['nodes']['node_' . $node]['port'], 0);
+          error_log("RedisCluster __call function: " . $e->getMessage() . " on $name on " . $this->cluster['nodes'][$alias]['host'] .':'. $this->cluster['nodes'][$alias]['port'], 0);
           $res = null;
         }
         if ($name == 'keys' || $name == 'getKeys')
