@@ -168,20 +168,20 @@ class RedisCluster {
         $this->__redis->pconnect($server['host'], $server['port']);
         $sla = $this->__redis->config('GET', 'slaveof');
         if (in_array($alias, $slaves) && $sla['slaveof'] == '') {
-          error_log("RedisCluster: server " . $server['host'] .':'. $server['port'] . " is not a slave.", 0); die();
+          throw new \RedisException("RedisCluster: server " . $server['host'] .':'. $server['port'] . " is not a slave.");
         }
         $this->__redis->select($redisdb);
       }
-      catch(RedisException $e) {
+      catch(\RedisException $e) {
         try {
           $this->__redis->pconnect($server['host'], $server['port']);
           $sla = $this->__redis->config('GET', 'slaveof');
           if (in_array($alias, $slaves) && $sla['slaveof'] == '') {
-            error_log("RedisCluster: server " . $server['host'] .':'. $server['port'] . " is not a slave.", 0); die();
+            throw new \RedisException("RedisCluster: server " . $server['host'] .':'. $server['port'] . " is not a slave.");
           }
           $this->__redis->select($redisdb);
         }
-        catch(RedisException $e) {
+        catch(\RedisException $e) {
           //if node is slave and is down, replace its connection with its master's
           $ms = array_search($alias, $this->cluster['master_of']);
           if(!empty($ms) && ($sla['slaveof'] != '' || $cluster['nodes'][$ms] == $cluster['nodes'][$alias])) {
@@ -189,18 +189,18 @@ class RedisCluster {
               $this->__redis->pconnect($cluster['nodes'][$ms]['host'], $cluster['nodes'][$ms]['port']);
               $this->__redis->select($redisdb);
             }
-            catch(RedisException $e) {
+            catch(\RedisException $e) {
               try {
                 $this->__redis->pconnect($cluster['nodes'][$ms]['host'], $cluster['nodes'][$ms]['port']);
                 $this->__redis->select($redisdb);
               }
-              catch(RedisException $e) {
-                error_log("RedisCluster cannot connect to: " . $cluster['nodes'][$ms]['host'] .':'. $cluster['nodes'][$ms]['port'], 0); die();
+              catch(\RedisException $e) {
+                error_log("RedisCluster cannot connect to: " . $cluster['nodes'][$ms]['host'] .':'. $cluster['nodes'][$ms]['port'] . " " . $e->getMessage(), 0); die();
               }
             }
             $this->redises[$alias] =  $this->__redis;
           } else {
-            error_log("RedisCluster cannot connect to: " . $server['host'] .':'. $server['port'], 0); die();
+            error_log("RedisCluster cannot connect to: " . $server['host'] .':'. $server['port'] . " " . $e->getMessage(), 0); die();
           }
         }
       }
@@ -218,7 +218,7 @@ class RedisCluster {
     foreach ($this->redises as $alias => $server) {
       try {
         $server->select($redisdb);
-      } catch(RedisException $e) {
+      } catch(\RedisException $e) {
         error_log("RedisCluster setSelectDB : " . $e->getMessage(). " on " . $this->cluster['nodes'][$alias]['host'] . ':' . $this->cluster['nodes'][$alias]['port'] . "  db $redisdb", 0); die;
       }
       $this->redises[$alias] =  $server;
@@ -250,7 +250,7 @@ class RedisCluster {
           else
             return call_user_func_array(array($this, $name), $args);
         } else {
-          throw new \Exception("RedisCluster: Command $name Not Supported (each key name has its own node)");
+          throw new \RedisException("RedisCluster: Command $name Not Supported (each key name has its own node)");
         }
       }
       //get the hash key depending on tags or not
@@ -279,7 +279,7 @@ class RedisCluster {
         else
           return call_user_func_array(array($redisent, $name), $args);
 
-      } catch(RedisException $e) {
+      } catch(\RedisException $e) {
         error_log("RedisCluster: " . $e->getMessage()." on $name on " . $this->cluster['nodes']['node_' . $node]['host'] .':'. $this->cluster['nodes']['node_' . $node]['port'], 0);
         return null;
       }
@@ -295,8 +295,9 @@ class RedisCluster {
           else {
             $res = call_user_func_array(array($redisent, $name), $args);
           }
-        } catch(RedisException $e) {
+        } catch(\RedisException $e) {
           error_log("RedisCluster __call function: " . $e->getMessage() . " on $name on " . $this->cluster['nodes']['node_' . $node]['host'] .':'. $this->cluster['nodes']['node_' . $node]['port'], 0);
+          $res = null;
         }
         if ($name == 'keys' || $name == 'getKeys')
           $result += $res;
