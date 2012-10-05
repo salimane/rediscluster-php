@@ -17,7 +17,7 @@ Travis CI
 ---------
 
 Currently, ``rediscluster-php`` is being tested via travis ci for php  
-version 5.2, 5.3 and 5.4: |Build Status|
+version 5.3 and 5.4: |Build Status|
 
 Installation
 ------------
