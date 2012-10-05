@@ -256,7 +256,7 @@ class RedisCluster {
       }
       //get the hash key depending on tags or not
       $hkey = $args[0];
-      //take care of tagged key names for forcing multiple keys on the same node, e.g. $redis->set("bar{zap}", "bar")
+      //take care of hash tags names for forcing multiple keys on the same node, e.g. $redis->set("bar{zap}", "bar")
       if ($tag_start) {
         $hkey = substr($args[0], $tag_start+1, -1);
         $args[0] = substr($args[0], 0, $tag_start);

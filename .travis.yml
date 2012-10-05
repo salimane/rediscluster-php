@@ -9,3 +9,9 @@ before_script:
   
 services:
   - redis-server
+  
+notifications:
+  email:
+    recipients: me@salimane.com
+    on_success: change
+    on_failure: always
