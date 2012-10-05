@@ -164,11 +164,11 @@ class RedisCluster {
     //connect to all servers
     foreach ($cluster['nodes'] as $alias => $server) {
       $this->__redis = new \Redis();
-      $sla = null;
+      $info = null;
       try {
         $this->__redis->pconnect($server['host'], $server['port']);
-        $sla = $this->__redis->config('GET', 'slaveof');
-        if (in_array($alias, $slaves) && $sla['slaveof'] == '') {
+        $info = $this->__redis->info();
+        if (in_array($alias, $slaves) && $info['role'] == 'master') {
           throw new \RedisException("RedisCluster: server " . $server['host'] .':'. $server['port'] . " is not a slave.");
         }
         $this->__redis->select($redisdb);
@@ -176,8 +176,8 @@ class RedisCluster {
       catch(\RedisException $e) {
         try {
           $this->__redis->pconnect($server['host'], $server['port']);
-          $sla = $this->__redis->config('GET', 'slaveof');
-          if (in_array($alias, $slaves) && $sla['slaveof'] == '') {
+          $info = $this->__redis->info();
+          if (in_array($alias, $slaves) && $info['role'] == 'master') {
             throw new \RedisException("RedisCluster: server " . $server['host'] .':'. $server['port'] . " is not a slave.");
           }
           $this->__redis->select($redisdb);
@@ -185,7 +185,7 @@ class RedisCluster {
         catch(\RedisException $e) {
           //if node is slave and is down, replace its connection with its master's
           $ms = array_search($alias, $this->cluster['master_of']);
-          if(!empty($ms) && ($sla['slaveof'] != '' || $cluster['nodes'][$ms] == $cluster['nodes'][$alias])) {
+          if(!empty($ms) && ($info['role'] == 'slave' || $cluster['nodes'][$ms] == $cluster['nodes'][$alias])) {
             try {
               $this->__redis->pconnect($cluster['nodes'][$ms]['host'], $cluster['nodes'][$ms]['port']);
               $this->__redis->select($redisdb);

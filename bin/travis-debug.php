@@ -15,10 +15,14 @@ $cluster = array(
        'node_1' => 'node_6',  //node_6 slaveof node_1 in redis6.conf
        'node_2' => 'node_5',  // node_5 slaveof node_2 in redis5.conf
      ),
- 
+
      'default_node' => 'node_1'
  );
 
 $r = new RedisCluster\RedisCluster($cluster, 4);
+$infos = $r->info();
+var_dump($infos['node_1']);
+foreach ($infos as $node => $info)
+  var_dump($infos[$node]['role']);
 var_dump($r->set('foo', 'bar'));
 var_dump($r->get('foo'));
