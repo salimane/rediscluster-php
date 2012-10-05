@@ -13,12 +13,6 @@ fault tolerant way. ``rediscluster-php`` uses `phpredis <https://github.com/nico
 when connecting to the redis servers, thus the original api commands would work without problems within
 the context of a cluster of redis servers.
 
-Travis CI
----------
-
-Currently, ``rediscluster-php`` is being tested via travis ci for php
-version 5.3 and 5.4: |Build Status|
-
 Installation
 ------------
 
@@ -74,13 +68,13 @@ Getting Started
     php (       'node_1' => array('host' => '127.0.0.1', 'port' => 63791),
     php (       'node_2' => array('host' => '127.0.0.1', 'port' => 63792),
     php (       //slaves
-    php (       'node_5' => array('host' => '127.0.0.1', 'port' => 63795),
-    php (       'node_6' => array('host' => '127.0.0.1', 'port' => 63796),
+    php (       'node_3' => array('host' => '127.0.0.1', 'port' => 63793),
+    php (       'node_4' => array('host' => '127.0.0.1', 'port' => 63794),
     php (     ),
     php (     //replication information
     php (     'master_of' => array(
-    php (       'node_1' => 'node_6',  //node_6 slaveof node_1 in redis6.conf
-    php (       'node_2' => 'node_5',  // node_5 slaveof node_2 in redis5.conf
+    php (       'node_1' => 'node_4',  //node_4 slaveof node_1 in redis4.conf
+    php (       'node_2' => 'node_3',  // node_3 slaveof node_2 in redis3.conf
     php (     ),
     php ( 
     php (     'default_node' => 'node_1'
@@ -203,6 +197,25 @@ To do so it processes the related involved redis servers at interface level.
     
     )
     php > 
+
+
+Note
+----
+
+All rediscluster commands are lowercase.
+
+this :
+
+::
+
+    php > $r->zrangebyscore('key', 0, 3);
+
+
+instead of this :
+
+::
+
+    php > $r->zRangeByScore('key', 0, 3);
 
 
 Redis-Sharding & Redis-Copy
