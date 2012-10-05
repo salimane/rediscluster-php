@@ -13,6 +13,12 @@ fault tolerant way. ``rediscluster-php`` uses `phpredis <https://github.com/nico
 when connecting to the redis servers, thus the original api commands would work without problems within
 the context of a cluster of redis servers.
 
+Travis CI
+---------
+
+Currently, ``rediscluster-php`` is being tested via travis ci for php  
+version 5.2, 5.3 and 5.4: |Build Status|
+
 Installation
 ------------
 

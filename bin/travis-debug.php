@@ -20,9 +20,5 @@ $cluster = array(
  );
 
 $r = new RedisCluster\RedisCluster($cluster, 4);
-$infos = $r->info();
-var_dump($infos['node_1']);
-foreach ($infos as $node => $info)
-  var_dump($infos[$node]['role']);
 var_dump($r->set('foo', 'bar'));
 var_dump($r->get('foo'));
