@@ -2,7 +2,7 @@
 
 //namespace RedisCluster\RedisCluster\Tests;
 
-use RedisCluster\RedisCluster;
+//use RedisCluster\RedisCluster;
 
 include "config.php";
 
@@ -15,7 +15,7 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase {
 
   public function get_client() {
     global $cluster;
-    return new RedisCluster($cluster, 4);
+    return new RedisCluster\RedisCluster($cluster, 4);
   }
 
   public function setUp() {
@@ -49,7 +49,7 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase {
     $node = $this->client->getnodefor('bar');
     $node = array_values($node);
     $node = $node[0];
-    $rd = new Redis();
+    $rd = new \Redis();
     $rd->connect($node['host'], $node['port']);
     $rd->select(4);
     $this->assertEquals($this->client->get('bar'), $rd->get('bar'));
@@ -79,7 +79,7 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase {
 	  $node = $this->client->getnodefor('foo');
 	  $node = array_values($node);
 	  $node = $node[0];
-	  $rd = new Redis();
+	  $rd = new \Redis();
 	  $rd->connect($node['host'], $node['port']);
 	  $rd->select(4);
 	  $this->assertEquals($rd->get('bar'), $this->client->get('bar{foo}'));
