@@ -214,6 +214,43 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase {
 		$this->assertGreaterThanOrEqual(58, $this->client->ttl('b'));
   }
 
+  function test_pexpire(){
+    $infos = $this->client->info();
+    foreach($infos as $info) {
+      $version = $info['redis_version'];
+      if (version_compare($version, "2.5.0", "<"))
+        $this->markTestSkipped();
+    }
+
+    $this->assertEquals($this->client->pexpire('a', 10000), false);
+    $this->client->set('a','foo');
+    $this->assertEquals($this->client->pexpire('a', 10000), true);
+    $this->assertTrue($this->client->pttl('a') <= 10000);
+    $this->assertEquals($this->client->persist('a'), true);
+    $this->assertEquals($this->client->pttl('a'), -1);
+  }
+
+  function test_pexpireat(){
+    $infos = $this->client->info();
+    foreach($infos as $info) {
+      $version = $info['redis_version'];
+      if (version_compare($version, "2.5.0", "<"))
+        $this->markTestSkipped();
+    }
+
+    $expire_at = time() + 60;
+    $this->assertEquals($this->client->pexpireat('a', $expire_at), false);
+    $this->client->set('a', 'foo');
+    # expire at in unix time (milliseconds)
+    $expire_at_seconds = $expire_at * 1000;
+    $this->assertEquals($this->client->pexpireat('a', $expire_at_seconds), true);
+    $this->assertTrue($this->client->ttl('a') <= 60);
+    # expire at given time
+    $this->client->set('b', 'bar');
+    $this->assertEquals($this->client->pexpireat('b', $expire_at), true);
+    $this->assertTrue($this->client->ttl('b') <= 60);
+  }
+
   function test_get_set_bit() {
 		$this->assertEquals($this->client->getbit('a', 5), false);
 		$this->assertEquals($this->client->setbit('a', 5, true), false);
@@ -343,6 +380,20 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals($this->client->incr('a', 5), 7);
 		$this->assertEquals($this->client->get('a'), '7');
 	}
+
+  function test_incrbyfloat(){
+    $infos = $this->client->info();
+    foreach($infos as $info) {
+      $version = $info['redis_version'];
+      if (version_compare($version, "2.5.0", "<"))
+        $this->markTestSkipped();
+    }
+
+    $this->assertEquals($this->client->incrbyfloat('a', 1), 1.0);
+    $this->assertEquals($this->client->get('a'), '1');
+    $this->assertEquals($this->client->incrbyfloat('a', 1.1), 2.1);
+    $this->assertEquals(floatval($this->client->get('a')), floatval(2.1));
+  }
 
 	function test_keys() {
 		$this->markTestSkipped();
@@ -568,16 +619,24 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase {
   }
 
   function test_lpush() {
-		// key is not a list
-		$this->client->set('a', 'b');
-		$this->assertEquals($this->client->lpush('a', 'a'), false);
-		$this->client->del('a');
-		// real logic
-		$this->assertEquals(1, $this->client->lpush('a', 'b'));
-		$this->assertEquals(2, $this->client->lpush('a', 'a'));
+    // key is not a list
+    $this->client->set('a', 'b');
+    $this->assertEquals($this->client->lpush('a', 'a'), false);
+    $this->client->del('a');
+    // real logic
+    $this->assertEquals(1, $this->client->lpush('a', 'b'));
+    $this->assertEquals(2, $this->client->lpush('a', 'a'));
+    $infos = $this->client->info();
+    foreach($infos as $info) {
+      $version = $info['redis_version'];
+      if (version_compare($version, "2.4.0", ">=")){
+        $this->assertEquals(4, $this->client->lpush('a', 'b', 'a'));
+        break;
+      }
+    }
 
-		$this->assertEquals($this->client->lindex('a', 0), 'a');
-		$this->assertEquals($this->client->lindex('a', 1), 'b');
+    $this->assertEquals($this->client->lindex('a', 0), 'a');
+    $this->assertEquals($this->client->lindex('a', 1), 'b');
   }
 
   function test_lpushx() {
@@ -692,16 +751,24 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase {
 	}
 
   function test_rpush() {
-		// key is not a list
-		$this->client->set('a', 'b');
-		$this->assertEquals($this->client->rpush('a', 'a'), false);
-		$this->client->del('a');
-		// real logic
-		$this->assertEquals(1, $this->client->rpush('a', 'a'));
-		$this->assertEquals(2, $this->client->rpush('a', 'b'));
+    // key is not a list
+    $this->client->set('a', 'b');
+    $this->assertEquals($this->client->rpush('a', 'a'), false);
+    $this->client->del('a');
+    // real logic
+    $this->assertEquals(1, $this->client->rpush('a', 'a'));
+    $this->assertEquals(2, $this->client->rpush('a', 'b'));
+    $infos = $this->client->info();
+    foreach($infos as $info) {
+      $version = $info['redis_version'];
+      if (version_compare($version, "2.4.0", ">=")){
+        $this->assertEquals(4, $this->client->rpush('a', 'b', 'a'));
+        break;
+      }
+    }
 
-		$this->assertEquals($this->client->lindex('a', 0), 'a');
-		$this->assertEquals($this->client->lindex('a', 1), 'b');
+    $this->assertEquals($this->client->lindex('a', 0), 'a');
+    $this->assertEquals($this->client->lindex('a', 1), 'b');
   }
 
   function test_rpushx() {
@@ -1282,6 +1349,24 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase {
 		$this->client->hset('a', 'a3', 'foo');
 		$this->assertEquals($this->client->hincrby('a', 'a3', 1), false);
 	}
+
+  function test_hincrbyfloat(){
+    $infos = $this->client->info();
+    foreach($infos as $info) {
+      $version = $info['redis_version'];
+      if (version_compare($version, "2.5.0", "<"))
+        $this->markTestSkipped();
+    }
+
+    # key is not a hash
+    $this->client->set('a', 'a');
+    $this->assertEquals($this->client->hincrbyfloat('a', 'a1', 1), false);
+    $this->client->del('a');
+    # no key should create the hash and incr the key's value to 1
+    $this->assertEquals($this->client->hincrbyfloat('a', 'a1', 1), 1.0);
+    $this->assertEquals($this->client->hincrbyfloat('a', 'a1', 1), 2.0);
+    $this->assertEquals($this->client->hincrbyfloat('a', 'a1', 1.2), 3.2);
+  }
 
 	function test_hkeys() {
 		// key is not a hash

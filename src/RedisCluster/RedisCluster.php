@@ -79,9 +79,9 @@ class RedisCluster {
   private static $write_keys = array(
     'append' => 'append', 'blpop' => 'blpop', 'brpop' => 'brpop', 'brpoplpush' => 'brpoplpush',
     'decr' => 'decr', 'decrby' => 'decrby', 'del' => 'del', 'exists' => 'exists', 'hexists' => 'hexists',
-    'expire' => 'expire', 'expireat' => 'expireat', 'getset' => 'getset', 'hdel' => 'hdel',
-    'hincrby' => 'hincrby', 'hset' => 'hset', 'hsetnx' => 'hsetnx', 'hmset' => 'hmset',
-    'incr' => 'incr', 'incrby' => 'incrby', 'linsert' => 'linsert', 'lpop' => 'lpop',
+    'expire' => 'expire', 'expireat' => 'expireat', 'pexpire' => 'pexpire', 'pexpireat' => 'pexpireat', 'getset' => 'getset', 'hdel' => 'hdel',
+    'hincrby' => 'hincrby', 'hincrbyfloat' => 'hincrbyfloat', 'hset' => 'hset', 'hsetnx' => 'hsetnx', 'hmset' => 'hmset',
+    'incr' => 'incr', 'incrby' => 'incrby', 'incrbyfloat' => 'incrbyfloat', 'linsert' => 'linsert', 'lpop' => 'lpop',
     'lpush' => 'lpush', 'lpushx' => 'lpushx', 'lrem' => 'lrem', 'lset' => 'lset',
     'ltrim' => 'ltrim', 'move' => 'move',
     'persist' => 'persist', 'publish' => 'publish', 'psubscribe' => 'psubscribe', 'punsubscribe' => 'punsubscribe',
