@@ -1,4 +1,14 @@
 <?php
+/**
+ * config file of the RedisCluster test cases
+ *
+ * @category RedisCluster
+ * @package  RedisCluster
+ * @author   (c) Salimane Adjao Moustapha <me@salimane.com>
+ * @license  MIT http://www.opensource.org/licenses/mit-license.php
+ * @version  GIT:258f9e4
+ * @link     https://github.com/salimane/rediscluster-php
+ */
 
 global $cluster;
 $cluster = array(
