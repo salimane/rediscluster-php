@@ -205,25 +205,6 @@ To do so it processes the related involved redis servers at interface level.
     php > 
 
 
-Note
-----
-
-All rediscluster commands are lowercase.
-
-this :
-
-::
-
-    php > $r->zrangebyscore('key', 0, 3);
-
-
-instead of this :
-
-::
-
-    php > $r->zRangeByScore('key', 0, 3);
-
-
 Redis-Sharding & Redis-Copy
 ---------------------------
 

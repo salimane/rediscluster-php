@@ -264,6 +264,7 @@ class RedisCluster
      */
     public function __call($name, $args)
     {
+        $name = strtolower($name);
         if (!isset(self::$_loop_keys[$name])) {
             $tag_start = false;
             is_string($args[0]) && $tag_start = strrpos($args[0], '{');
