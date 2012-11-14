@@ -267,29 +267,56 @@ class RedisCluster
         $name = strtolower($name);
         if (!isset(self::$_loop_keys[$name])) {
             $tag_start = false;
-            is_string($args[0]) && $tag_start = strrpos($args[0], '{');
+            $key_array = false;
+            $hash_tag = '';
+            if (is_array($args[0])) {
+            	$key_array = true;
+                $hash_tag = key($args[0]);
+                if ($hash_tag !== NULL) {
+                    if ($hash_tag === 0) {
+                        $tag_start = strrpos($args[0][0], '{');
+                    } else {
+                        $tag_start = strrpos($hash_tag, '{');
+                    }
+                }
+            } else {
+                $tag_start = strrpos($args[0], '{');
+            }
 
             //trigger error msg on banned keys unless u're using it with tagged keys e.g. "bar{zap}"
             if (isset(self::$_tag_keys[$name]) && !$tag_start) {
                 if (is_callable(array($this, "_rc_$name"))) {
                     $name = "_rc_$name";
                     $argcount = count($args);
-                    if (1 == $argcount)
+                    if (1 == $argcount) {
                         return $this->$name($args[0]);
-                    elseif(2 == $argcount)
+                    } elseif (2 == $argcount) {
                         return $this->$name($args[0], $args[1]);
-                    else
+                    } else {
                         return call_user_func_array(array($this, $name), $args);
+                    }
                 } else {
                     throw new \RedisException("RedisCluster: Command $name Not Supported (each key name has its own node)");
                 }
             }
             //get the hash key depending on tags or not
             $hkey = $args[0];
-            //take care of hash tags names for forcing multiple keys on the same node, e.g. $redis->set("bar{zap}", "bar")
+            //take care of hash tags names for forcing multiple keys on the same node,
+            //e.g. $r->set("bar{zap}", "bar"), $r->mget(array("a{a}","b"))
             if ($tag_start) {
-                $hkey = substr($args[0], $tag_start+1, -1);
-                $args[0] = substr($args[0], 0, $tag_start);
+                if ($key_array) {
+                    if ($hash_tag === 0) {
+                        $hkey = substr($args[0][$hash_tag], $tag_start+1, -1);
+                        $args[0][$hash_tag] = substr($args[0][$hash_tag], 0, $tag_start);
+                    } else {
+                        $hkey = substr($hash_tag, $tag_start+1, -1);
+                        $args[0][substr($hash_tag, 0, $tag_start)] = $args[0][$hash_tag];
+                        unset($args[0][$hash_tag]);
+                    }
+                } else {
+                    $hkey = substr($args[0], $tag_start+1, -1);
+                    $args[0] = substr($args[0], 0, $tag_start);
+                }
             }
 
             //get the node number
@@ -303,12 +330,13 @@ class RedisCluster
             // Execute the command on the server
             try {
                 $argcount = count($args);
-                if (1 == $argcount)
+                if (1 == $argcount) {
                     return $redisent->$name($args[0]);
-                elseif(2 == $argcount)
+                } elseif (2 == $argcount) {
                     return $redisent->$name($args[0], $args[1]);
-                else
+                } else {
                     return call_user_func_array(array($redisent, $name), $args);
+                }
 
             } catch (\RedisException $e) {
                 error_log("RedisCluster: " . $e->getMessage()." on $name on " . $this->cluster['nodes'][$node]['host'] .':'. $this->cluster['nodes'][$node]['port'], 0);
@@ -329,10 +357,11 @@ class RedisCluster
                     error_log("RedisCluster __call function: " . $e->getMessage() . " on $name on " . $this->cluster['nodes'][$alias]['host'] .':'. $this->cluster['nodes'][$alias]['port'], 0);
                     $res = null;
                 }
-                if ($name == 'keys' || $name == 'getKeys')
+                if ($name == 'keys' || $name == 'getKeys') {
                     $result += $res;
-                else
+                } else {
                     $result[$alias] = $res;
+                }
             }
 
             return $result;
@@ -419,8 +448,9 @@ class RedisCluster
         $rpop = $this->rpop($src);
         if ($rpop) {
             $dst = array_shift($args);
-            if ($this->lpush($dst, $rpop))
+            if ($this->lpush($dst, $rpop)) {
                 return $rpop;
+            }
         }
 
         return false;
@@ -440,10 +470,12 @@ class RedisCluster
         if (!empty($src_set)) {
             foreach ($args as $key) {
                 $res = $this->smembers($key);
-                if (false === $res)
+                if (false === $res) {
                     return false;
-                if (!empty($res))
+                }
+                if (!empty($res)) {
                     $src_set = array_diff($src_set, $res);
+                }
             }
 
             return array_values($src_set);
@@ -465,8 +497,9 @@ class RedisCluster
         $result = call_user_func_array(array($this, 'sdiff'), $args);
         if (!empty($result)) {
             $res = 0;
-            foreach($result as $k => $v)
+            foreach ($result as $k => $v) {
                 $res += (int) $this->sadd($dst, $v);
+            }
 
             return $res;
         }
@@ -488,10 +521,12 @@ class RedisCluster
         if (!empty($src_set)) {
             foreach ($args as $key) {
                 $res = $this->smembers($key);
-                if (false === $res)
+                if (false === $res) {
                     return false;
-                if (!empty($res))
+                }
+                if (!empty($res)) {
                     $src_set = array_intersect($src_set, $res);
+                }
             }
 
             return array_values($src_set);
@@ -513,8 +548,9 @@ class RedisCluster
         $result = call_user_func_array(array($this, 'sinter'), $args);
         if (!empty($result)) {
             $res = 0;
-            foreach($result as $k => $v)
+            foreach ($result as $k => $v) {
                 $res += (int) $this->sadd($dst, $v);
+            }
 
             return $res;
         }
@@ -534,8 +570,10 @@ class RedisCluster
      */
     private function _rc_smove($src, $dst, $value)
     {
-        if ($this->srem($src, $value))
-            return bool($this->sadd($dst, $value));
+        if ($this->srem($src, $value)) {
+            return $this->sadd($dst, $value);
+        }
+
         return false;
     }
 
@@ -553,10 +591,12 @@ class RedisCluster
         if (!empty($src_set)) {
             foreach ($args as $key) {
                 $res = $this->smembers($key);
-                if (false === $res)
+                if (false === $res) {
                     return false;
-                if (!empty($res))
+                }
+                if (!empty($res)) {
                     $src_set = array_unique(array_merge($src_set, $res));
+                }
             }
 
             return array_values($src_set);
@@ -578,8 +618,9 @@ class RedisCluster
         $result = call_user_func_array(array($this, 'sunion'), $args);
         if (!empty($result)) {
             $res = 0;
-            foreach($result as $k => $v)
+            foreach ($result as $k => $v) {
                 $res += (int) $this->sadd($dst, $v);
+            }
 
             return $res;
         }
@@ -597,8 +638,9 @@ class RedisCluster
         $args = func_get_args();
         $args = array_shift($args);
         $result = true;
-        foreach($args as $k => $v)
+        foreach ($args as $k => $v) {
             $result = $result && $this->set($k, $v);
+        }
 
         return $result;
     }
@@ -613,9 +655,11 @@ class RedisCluster
     {
         $args = func_get_args();
         $args = array_shift($args);
-        foreach($args as $k => $v)
-            if ($this->exists($k))
+        foreach ($args as $k => $v) {
+            if ($this->exists($k)) {
                 return false;
+            }
+        }
 
         return $this->_rc_mset($args);
     }
@@ -628,9 +672,11 @@ class RedisCluster
     private function _rc_mget()
     {
         $args = func_get_args();
+        $args = array_shift($args);
         $result = array();
-        foreach($args as $key)
+        foreach ($args as $key) {
             $result[] = $this->get($key);
+        }
 
         return $result;
     }

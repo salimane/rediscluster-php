@@ -459,12 +459,20 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
 
     public function test_mget()
     {
-        $this->markTestSkipped();
         $this->assertEquals($this->client->mget(array('a', 'b')), array(false, false));
         $this->client->set('a', '1');
         $this->client->set('b', '2');
         $this->client->set('c', '3');
         $this->assertEquals($this->client->mget(array('a', 'other', 'b', 'c')), array('1', false, '2', '3'));
+    }
+
+    public function test_mget_hash_tag()
+    {
+        $this->assertEquals($this->client->mget(array('foo{foo}', 'bar')), array(false, false));
+        $this->client->set('foo', '1');
+        $this->client->set('bar{foo}', '2');
+        $this->client->set('other{foo}', '3');
+        $this->assertEquals($this->client->mget(array('foo{foo}', 'c', 'bar', 'other')), array('1', false, '2', '3'));
     }
 
     public function test_mset()
@@ -473,6 +481,15 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->client->mset($d));
         foreach($d as $k => $v)
             $this->assertEquals($this->client->get($k), $v);
+    }
+
+    public function test_mset_mget_hash_tag()
+    {
+        $this->assertTrue($this->client->mset(array('foo{foo}' => '1', 'bar' => '2', 'other' => '3')));
+        $this->assertEquals($this->client->mget(array('foo{foo}', 'bar', 'other')), array('1', '2', '3'));
+        $this->assertEquals($this->client->get('foo'), '1');
+        $this->assertEquals($this->client->get('bar{foo}'), '2');
+        $this->assertEquals($this->client->get('other{foo}'), '3');
     }
 
     public function test_msetnx()
