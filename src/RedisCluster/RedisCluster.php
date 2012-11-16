@@ -266,6 +266,7 @@ class RedisCluster
     {
         $name = strtolower($name);
         if (!isset(self::$_loop_keys[$name])) {
+            // take care of hash tags
             $tag_start = false;
             $key_array = false;
             $hash_tag = '';
@@ -283,7 +284,7 @@ class RedisCluster
                 $tag_start = strrpos($args[0], '{');
             }
 
-            //trigger error msg on banned keys unless u're using it with tagged keys e.g. "bar{zap}"
+            // trigger error msg on tag keys unless we have hash tags e.g. "bar{zap}"
             if (isset(self::$_tag_keys[$name]) && !$tag_start) {
                 if (is_callable(array($this, "_rc_$name"))) {
                     $name = "_rc_$name";
@@ -299,7 +300,7 @@ class RedisCluster
                     throw new \RedisException("RedisCluster: Command $name Not Supported (each key name has its own node)");
                 }
             }
-            //get the hash key depending on tags or not
+            // get the hash key
             $hkey = $args[0];
             //take care of hash tags names for forcing multiple keys on the same node,
             //e.g. $r->set("bar{zap}", "bar"), $r->mget(array("a{a}","b"))
