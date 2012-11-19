@@ -517,8 +517,6 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
 
     public function test_rename()
     {
-        //CLUSTER
-        $this->markTestSkipped();
         $this->client->set('a', '1');
         $this->assertTrue($this->client->rename('a', 'b'));
         $this->assertEquals($this->client->get('a'), false);
@@ -527,8 +525,6 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
 
     public function test_renamenx()
     {
-        //CLUSTER
-        $this->markTestSkipped();
         $this->client->set('a', '1');
         $this->client->set('b', '2');
         $this->assertEquals($this->client->renamenx('a', 'b'), false);
@@ -717,11 +713,11 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(2, $this->client->lpush('a', 'a'));
         $infos = $this->client->info();
         foreach ($infos as $info) {
-              $version = $info['redis_version'];
-              if (version_compare($version, "2.4.0", ">=")) {
-                  $this->assertEquals(4, $this->client->lpush('a', 'b', 'a'));
-                  break;
-              }
+            $version = $info['redis_version'];
+            if (version_compare($version, "2.4.0", ">=")) {
+                $this->assertEquals(4, $this->client->lpush('a', 'b', 'a'));
+                break;
+            }
         }
 
         $this->assertEquals($this->client->lindex('a', 0), 'a');
@@ -857,11 +853,11 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(2, $this->client->rpush('a', 'b'));
         $infos = $this->client->info();
         foreach ($infos as $info) {
-              $version = $info['redis_version'];
-              if (version_compare($version, "2.4.0", ">=")) {
-                  $this->assertEquals(4, $this->client->rpush('a', 'b', 'a'));
-                  break;
-              }
+            $version = $info['redis_version'];
+            if (version_compare($version, "2.4.0", ">=")) {
+                $this->assertEquals(4, $this->client->rpush('a', 'b', 'a'));
+                break;
+            }
         }
 
         $this->assertEquals($this->client->lindex('a', 0), 'a');
@@ -1008,8 +1004,6 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
 
     public function test_smove()
     {
-        //CLUSTER
-        $this->markTestSkipped();
         // src key is not set
         $this->make_set('b', array('b1', 'b2'));
         $this->assertEquals($this->client->smove('a', 'b', 'a1'), 0);
@@ -1209,15 +1203,15 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->client->zrangebyscore('a', 2, 4), array('a2', 'a3', 'a4'));
         $this->assertEquals($this->client->zrangebyscore('a', 2, 4, array('limit' => array(1, 2))), array('a3', 'a4'));
         $this->assertEquals(
-            $this->client->zrangebyscore(
-                'a', 2, 4, array('withscores' => true)
-            ),
-            array('a2' => 2.0, 'a3' => 3.0, 'a4' => 4.0)
+                        $this->client->zrangebyscore(
+                                        'a', 2, 4, array('withscores' => true)
+                        ),
+                        array('a2' => 2.0, 'a3' => 3.0, 'a4' => 4.0)
         );
         // a non existant key should return empty list
         $this->assertEquals(
-            $this->client->zrangebyscore('b', 0, 1, array('withscores' => true)),
-            array()
+                        $this->client->zrangebyscore('b', 0, 1, array('withscores' => true)),
+                        array()
         );
     }
 
@@ -1690,15 +1684,15 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
 
         $this->make_list('gods', '12345678');
         $num = $this->client->sort(
-            'gods',
-            array(
-                'limit' => array(2, 4),
-                'by' => 'user:*:username',
-                'get' => 'user:*:favorite_drink',
-                'sort' => 'desc',
-                 'alpha' => true,
-                'store' => 'sorted'
-            )
+                        'gods',
+                        array(
+                                        'limit' => array(2, 4),
+                                        'by' => 'user:*:username',
+                                        'get' => 'user:*:favorite_drink',
+                                        'sort' => 'desc',
+                                        'alpha' => true,
+                                        'store' => 'sorted'
+                        )
         );
         $this->assertEquals($num, 4);
         $this->assertEquals($this->client->lrange('sorted', 0, 10), array('vodka', 'milk', 'gin', 'apple juice'));
@@ -1764,9 +1758,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
     public function test_binary_lists()
     {
         $mapping = array(
-        'foo bar' => array('1', '2', '3'),
-        'foo\r\nbar\r\n'=> array('4', '5', '6'),
-        'foo\tbar\x07' => array('7', '8', '9'),
+                        'foo bar' => array('1', '2', '3'),
+                        'foo\r\nbar\r\n'=> array('4', '5', '6'),
+                        'foo\tbar\x07' => array('7', '8', '9'),
         );
         // fill in lists
         foreach ($mapping as $key => $value) {

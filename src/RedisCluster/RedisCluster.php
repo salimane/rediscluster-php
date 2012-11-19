@@ -59,81 +59,81 @@ class RedisCluster
      * @access private
      */
     private static $_read_keys = array(
-        'debug' => 'debug', 'getbit' => 'getbit',
-        'get' => 'get', 'getrange' => 'getrange', 'hget' => 'hget',
-        'hgetall' => 'hgetall', 'hkeys' => 'hkeys', 'hlen' => 'hlen',
-        'hmget' => 'hmget',
-        'hvals' => 'hvals', 'lindex' => 'lindex', 'llen' => 'llen',
-        'lrange' => 'lrange', 'object' => 'object',
-        'scard' => 'scard', 'sismember' => 'sismember', 'smembers' => 'smembers',
-        'srandmember' => 'srandmember', 'strlen' => 'strlen', 'type' => 'type',
-        'zcard' => 'zcard', 'zcount' => 'zcount', 'zrange' => 'zrange',
-        'zrangebyscore' => 'zrangebyscore',
-        'zrank' => 'zrank', 'zrevrange' => 'zrevrange',
-        'zrevrangebyscore' => 'zrevrangebyscore',
-        'zrevrank' => 'zrevrank', 'zscore' => 'zscore',
-        'mget' => 'mget', 'bitcount' => 'bitcount', 'echo' => 'echo',
-        'substr' => 'substr',
-        'getMultiple' => 'getMultiple',
-        'lSize' => 'lSize', 'lsize' => 'lsize', 'lGetRange' => 'lGetRange',
-        'sContains' => 'sContains', 'sSize' => 'sSize',
-        'sGetMembers' => 'sGetMembers',
-        'zSize' => 'zSize',
+                    'debug' => 'debug', 'getbit' => 'getbit',
+                    'get' => 'get', 'getrange' => 'getrange', 'hget' => 'hget',
+                    'hgetall' => 'hgetall', 'hkeys' => 'hkeys', 'hlen' => 'hlen',
+                    'hmget' => 'hmget',
+                    'hvals' => 'hvals', 'lindex' => 'lindex', 'llen' => 'llen',
+                    'lrange' => 'lrange', 'object' => 'object',
+                    'scard' => 'scard', 'sismember' => 'sismember', 'smembers' => 'smembers',
+                    'srandmember' => 'srandmember', 'strlen' => 'strlen', 'type' => 'type',
+                    'zcard' => 'zcard', 'zcount' => 'zcount', 'zrange' => 'zrange',
+                    'zrangebyscore' => 'zrangebyscore',
+                    'zrank' => 'zrank', 'zrevrange' => 'zrevrange',
+                    'zrevrangebyscore' => 'zrevrangebyscore',
+                    'zrevrank' => 'zrevrank', 'zscore' => 'zscore',
+                    'mget' => 'mget', 'bitcount' => 'bitcount', 'echo' => 'echo',
+                    'substr' => 'substr',
+                    'getMultiple' => 'getMultiple',
+                    'lSize' => 'lSize', 'lsize' => 'lsize', 'lGetRange' => 'lGetRange',
+                    'sContains' => 'sContains', 'sSize' => 'sSize',
+                    'sGetMembers' => 'sGetMembers',
+                    'zSize' => 'zSize',
     );
 
     /**
      * The write commands
      * @var array
      * @access private
-     */
+    */
     private static $_write_keys = array(
-        'append' => 'append', 'blpop' => 'blpop', 'brpop' => 'brpop',
-        'brpoplpush' => 'brpoplpush',
-        'decr' => 'decr', 'decrby' => 'decrby', 'del' => 'del',
-        'exists' => 'exists', 'hexists' => 'hexists',
-        'expire' => 'expire', 'expireat' => 'expireat', 'pexpire' => 'pexpire',
-        'pexpireat' => 'pexpireat', 'getset' => 'getset', 'hdel' => 'hdel',
-        'hincrby' => 'hincrby', 'hincrbyfloat' => 'hincrbyfloat', 'hset' => 'hset',
-        'hsetnx' => 'hsetnx', 'hmset' => 'hmset',
-        'incr' => 'incr', 'incrby' => 'incrby', 'incrbyfloat' => 'incrbyfloat',
-        'linsert' => 'linsert', 'lpop' => 'lpop',
-        'lpush' => 'lpush', 'lpushx' => 'lpushx', 'lrem' => 'lrem', 'lset' => 'lset',
-        'ltrim' => 'ltrim', 'move' => 'move',
-        'persist' => 'persist', 'publish' => 'publish', 'psubscribe' => 'psubscribe',
-        'punsubscribe' => 'punsubscribe',
-        'rpop' => 'rpop', 'rpoplpush' => 'rpoplpush', 'rpush' => 'rpush',
-        'rpushx' => 'rpushx', 'sadd' => 'sadd', 'sdiff' => 'sdiff',
-        'sdiffstore' => 'sdiffstore',
-        'set' => 'set', 'setbit' => 'setbit', 'setex' => 'setex', 'setnx' => 'setnx',
-        'setrange' => 'setrange', 'sinter' => 'sinter',
-        'sinterstore' => 'sinterstore', 'smove' => 'smove',
-        'sort' => 'sort', 'spop' => 'spop', 'srem' => 'srem',
-        'subscribe' => 'subscribe',
-        'sunion' => 'sunion', 'sunionstore' => 'sunionstore',
-        'unsubscribe' => 'unsubscribe', 'unwatch' => 'unwatch',
-        'watch' => 'watch', 'zadd' => 'zadd', 'zincrby' => 'zincrby',
-        'zinterstore' => 'zinterstore',
-        'zrem' => 'zrem', 'zremrangebyrank' => 'zremrangebyrank',
-        'zremrangebyscore' => 'zremrangebyscore', 'zunionstore' => 'zunionstore',
-        'mset' => 'mset','msetnx' => 'msetnx', 'rename' => 'rename',
-        'renamenx' => 'renamenx',
-        'del' => 'del', 'ttl' => 'ttl', 'flushall' => 'flushall',
-        'flushdb' => 'flushdb', 'renameKey' => 'renameKey',
-        'listTrim' => 'listTrim', 'lRemove' => 'lRemove', 'sRemove' => 'sRemove',
-        'setTimeout' => 'setTimeout', 'zDelete' => 'zDelete',
-        'zDeleteRangeByScore' => 'zDeleteRangeByScore', 'zDeleteRangeByRank' => 'zDeleteRangeByRank',
+                    'append' => 'append', 'blpop' => 'blpop', 'brpop' => 'brpop',
+                    'brpoplpush' => 'brpoplpush',
+                    'decr' => 'decr', 'decrby' => 'decrby', 'del' => 'del',
+                    'exists' => 'exists', 'hexists' => 'hexists',
+                    'expire' => 'expire', 'expireat' => 'expireat', 'pexpire' => 'pexpire',
+                    'pexpireat' => 'pexpireat', 'getset' => 'getset', 'hdel' => 'hdel',
+                    'hincrby' => 'hincrby', 'hincrbyfloat' => 'hincrbyfloat', 'hset' => 'hset',
+                    'hsetnx' => 'hsetnx', 'hmset' => 'hmset',
+                    'incr' => 'incr', 'incrby' => 'incrby', 'incrbyfloat' => 'incrbyfloat',
+                    'linsert' => 'linsert', 'lpop' => 'lpop',
+                    'lpush' => 'lpush', 'lpushx' => 'lpushx', 'lrem' => 'lrem', 'lset' => 'lset',
+                    'ltrim' => 'ltrim', 'move' => 'move',
+                    'persist' => 'persist', 'publish' => 'publish', 'psubscribe' => 'psubscribe',
+                    'punsubscribe' => 'punsubscribe',
+                    'rpop' => 'rpop', 'rpoplpush' => 'rpoplpush', 'rpush' => 'rpush',
+                    'rpushx' => 'rpushx', 'sadd' => 'sadd', 'sdiff' => 'sdiff',
+                    'sdiffstore' => 'sdiffstore',
+                    'set' => 'set', 'setbit' => 'setbit', 'setex' => 'setex', 'setnx' => 'setnx',
+                    'setrange' => 'setrange', 'sinter' => 'sinter',
+                    'sinterstore' => 'sinterstore', 'smove' => 'smove',
+                    'sort' => 'sort', 'spop' => 'spop', 'srem' => 'srem',
+                    'subscribe' => 'subscribe',
+                    'sunion' => 'sunion', 'sunionstore' => 'sunionstore',
+                    'unsubscribe' => 'unsubscribe', 'unwatch' => 'unwatch',
+                    'watch' => 'watch', 'zadd' => 'zadd', 'zincrby' => 'zincrby',
+                    'zinterstore' => 'zinterstore',
+                    'zrem' => 'zrem', 'zremrangebyrank' => 'zremrangebyrank',
+                    'zremrangebyscore' => 'zremrangebyscore', 'zunionstore' => 'zunionstore',
+                    'mset' => 'mset','msetnx' => 'msetnx', 'rename' => 'rename',
+                    'renamenx' => 'renamenx',
+                    'del' => 'del', 'ttl' => 'ttl', 'flushall' => 'flushall',
+                    'flushdb' => 'flushdb', 'renameKey' => 'renameKey',
+                    'listTrim' => 'listTrim', 'lRemove' => 'lRemove', 'sRemove' => 'sRemove',
+                    'setTimeout' => 'setTimeout', 'zDelete' => 'zDelete',
+                    'zDeleteRangeByScore' => 'zDeleteRangeByScore', 'zDeleteRangeByRank' => 'zDeleteRangeByRank',
     );
 
     /**
      * The commands that are not subject to hashing
      * @var array
      * @access private
-     */
+    */
     private static $_dont_hash = array(
-        'auth' => 'auth', 'monitor' => 'monitor', 'quit' => 'quit',
-        'shutdown' => 'shutdown', 'slaveof' => 'slaveof', 'slowlog' => 'slowlog', 'sync' => 'sync',
-        'discard' => 'discard', 'exec' => 'exec', 'multi' => 'multi',
-        'setOption' => 'setOption', 'getOption' => 'getOption'
+                    'auth' => 'auth', 'monitor' => 'monitor', 'quit' => 'quit',
+                    'shutdown' => 'shutdown', 'slaveof' => 'slaveof', 'slowlog' => 'slowlog', 'sync' => 'sync',
+                    'discard' => 'discard', 'exec' => 'exec', 'multi' => 'multi',
+                    'setOption' => 'setOption', 'getOption' => 'getOption'
     );
 
     /**
@@ -141,16 +141,16 @@ class RedisCluster
      * when hashing for the cluster
      * @var array
      * @access private
-     */
+    */
     private static $_tag_keys = array(
-        'mget' => 'mget', 'rename' => 'rename', 'renamenx' => 'renamenx',
-        'mset' => 'mset', 'msetnx' => 'msetnx',
-        'brpoplpush' => 'brpoplpush', 'rpoplpush' => 'rpoplpush',
-        'sdiff' => 'sdiff', 'sdiffstore' => 'sdiffstore',
-        'sinter' => 'sinter', 'sinterstore' => 'sinterstore',
-        'sunion' => 'sunion', 'sunionstore' => 'sunionstore',
-        'smove' => 'smove', 'zinterstore' => 'zinterstore',
-        'zunionstore' => 'zunionstore', 'sort' => 'sort'
+                    'mget' => 'mget', 'rename' => 'rename', 'renamenx' => 'renamenx',
+                    'mset' => 'mset', 'msetnx' => 'msetnx',
+                    'brpoplpush' => 'brpoplpush', 'rpoplpush' => 'rpoplpush',
+                    'sdiff' => 'sdiff', 'sdiffstore' => 'sdiffstore',
+                    'sinter' => 'sinter', 'sinterstore' => 'sinterstore',
+                    'sunion' => 'sunion', 'sunionstore' => 'sunionstore',
+                    'smove' => 'smove', 'zinterstore' => 'zinterstore',
+                    'zunionstore' => 'zunionstore', 'sort' => 'sort'
     );
 
     /**
@@ -158,17 +158,17 @@ class RedisCluster
      * return the aggregrate results
      * @var array
      * @access private
-     */
+    */
     private static $_loop_keys = array(
-        'keys' => 'keys', 'getkeys' => 'getkeys',
-        'select' => 'select',
-        'save' => 'save', 'bgsave' => 'bgsave',
-        'bgrewriteaof' => 'bgrewriteaof',
-        'dbsize' => 'dbsize', 'info' => 'info',
-        'lastsave' => 'lastsave', 'ping' => 'ping',
-        'flushall' => 'flushall', 'flushdb' => 'flushdb',
-        'randomkey' => 'randomkey', 'sync' => 'sync',
-        'config' => 'config', 'time' => 'time'
+                    'keys' => 'keys', 'getkeys' => 'getkeys',
+                    'select' => 'select',
+                    'save' => 'save', 'bgsave' => 'bgsave',
+                    'bgrewriteaof' => 'bgrewriteaof',
+                    'dbsize' => 'dbsize', 'info' => 'info',
+                    'lastsave' => 'lastsave', 'ping' => 'ping',
+                    'flushall' => 'flushall', 'flushdb' => 'flushdb',
+                    'randomkey' => 'randomkey', 'sync' => 'sync',
+                    'config' => 'config', 'time' => 'time'
     );
 
     /**
@@ -176,7 +176,7 @@ class RedisCluster
      *
      * @param array $cluster The Redis servers in the cluster.
      * @param int   $redisdb the db to be selected
-     */
+    */
     public function __construct($cluster, $redisdb = 0)
     {
         //die when wrong server array
@@ -271,7 +271,7 @@ class RedisCluster
             $key_array = false;
             $hash_tag = '';
             if (is_array($args[0])) {
-            	$key_array = true;
+                $key_array = true;
                 $hash_tag = key($args[0]);
                 if ($hash_tag !== NULL) {
                     if ($hash_tag === 0) {
@@ -418,14 +418,14 @@ class RedisCluster
      * forever.
      * Not atomic
      *
-     * @return void
+     * @param string $src     the source list
+     * @param string $dst     the destination list
+     * @param int    $timeout the timeout
+     *
+     * @return string | bool
      */
-    private function _rc_brpoplpush()
+    private function _rc_brpoplpush($src, $dst, $timeout)
     {
-        $args = func_get_args();
-        $src = array_shift($args);
-        $dst = array_shift($args);
-        $timeout = array_shift($args);
         $rpop = $this->brpop($src, $timeout);
         if (!empty($rpop)) {
             $this->lpush($dst, $rpop[1]);
@@ -440,15 +440,15 @@ class RedisCluster
      * RPOP a value off of the ``src`` list and LPUSH it
      * on to the ``dst`` list.  Returns the value.
      *
-     * @return void
+     * @param string $src the source list
+     * @param string $dst the destination list
+     *
+     * @return string | bool
      */
-    private function _rc_rpoplpush()
+    private function _rc_rpoplpush($src, $dst)
     {
-        $args = func_get_args();
-        $src = array_shift($args);
         $rpop = $this->rpop($src);
         if ($rpop) {
-            $dst = array_shift($args);
             if ($this->lpush($dst, $rpop)) {
                 return $rpop;
             }
@@ -461,7 +461,7 @@ class RedisCluster
      * Returns the members of the set resulting from the difference between
      * the first set and all the successive sets.
      *
-     * @return void
+     * @return array
      */
     private function _rc_sdiff()
     {
@@ -489,7 +489,7 @@ class RedisCluster
      * Store the difference of sets ``src``,  ``args`` into a new
      * set named ``dest``.  Returns the number of keys in the new set.
      *
-     * @return void
+     * @return int
      */
     private function _rc_sdiffstore()
     {
@@ -512,7 +512,7 @@ class RedisCluster
      * Returns the members of the set resulting from the difference between
      * the first set and all the successive sets.
      *
-     * @return void
+     * @return array
      */
     private function _rc_sinter()
     {
@@ -540,7 +540,7 @@ class RedisCluster
      * Store the difference of sets ``src``,  ``args`` into a new
      * set named ``dest``.  Returns the number of keys in the new set.
      *
-     * @return void
+     * @return int
      */
     private function _rc_sinterstore()
     {
@@ -560,19 +560,19 @@ class RedisCluster
     }
 
     /**
-     * Move ``value`` from set ``src`` to set ``dst``
+     * Move ``$value`` from set ``$src`` to set ``$dst``
      * not atomic
      *
      * @param string $src   the source set
      * @param string $dst   the destination set
      * @param string $value the value being moved
      *
-     * @return void
+     * @return bool
      */
     private function _rc_smove($src, $dst, $value)
     {
-        if ($this->srem($src, $value)) {
-            return $this->sadd($dst, $value);
+        if ($this->type($dst) == \Redis::REDIS_SET && $this->srem($src, $value)) {
+            return (bool) $this->sadd($dst, $value);
         }
 
         return false;
@@ -582,7 +582,7 @@ class RedisCluster
      * Returns the members of the set resulting from the union between
      * the first set and all the successive sets.
      *
-     * @return void
+     * @return array
      */
     private function _rc_sunion()
     {
@@ -610,7 +610,7 @@ class RedisCluster
      * Store the union of sets ``src``,  ``args`` into a new
      * set named ``dest``.  Returns the number of keys in the new set.
      *
-     * @return void
+     * @return int
      */
     private function _rc_sunionstore()
     {
@@ -632,7 +632,7 @@ class RedisCluster
     /**
      * Sets each key in the ``args`` dict to its corresponding value
      *
-     * @return void
+     * @return bool
      */
     private function _rc_mset()
     {
@@ -650,7 +650,7 @@ class RedisCluster
      * Sets each key in the ``args`` dict to its corresponding value if
      * none of the keys are already set
      *
-     * @return void
+     * @return bool
      */
     private function _rc_msetnx()
     {
@@ -668,7 +668,7 @@ class RedisCluster
     /**
      * Returns a list of values ordered identically to ``$args``
      *
-     * @return void
+     * @return array
      */
     private function _rc_mget()
     {
@@ -680,6 +680,78 @@ class RedisCluster
         }
 
         return $result;
+    }
+
+    /**
+     * Rename key ``$src`` to ``$dst``
+     *
+     * @param string $src the source set
+     * @param string $dst the destination set
+     *
+     * @return bool
+     */
+    private function _rc_rename($src, $dst)
+    {
+        if ($src == $dst) {
+            return $this->rename($src . "{" . $src . "}", $src);
+        }
+        if (!$this->exists($src)) {
+            return $this->rename($src . "{" . $src . "}", $src);
+        }
+
+        $this->del($dst);
+        $ktype = $this->type($src);
+        $kttl = $this->ttl($src);
+
+        if (!$ktype) {
+            return false;
+        }
+
+        if ($ktype == \Redis::REDIS_STRING) {
+            $this->set($dst, $this->get($src));
+        } elseif ($ktype == \Redis::REDIS_HASH) {
+            $this->hmset(dst, $this->hgetall($src));
+        } elseif ($ktype == \Redis::REDIS_LIST) {
+            $list = $this->lrange($src, 0, -1);
+            foreach ($list as $k) {
+                $this->rpush($dst, $k);
+            }
+        } elseif ($ktype == \Redis::REDIS_SET) {
+            $set = $this->smembers($src);
+            foreach ($set as $k) {
+                $this->sadd($dst, k);
+            }
+        } elseif (ktype == \Redis::REDIS_ZSET) {
+            $zset = $this->zrange($src, 0, -1, true);
+            foreach ($zset as $k => $v) {
+                $this->zadd($dst, $v, $k);
+            }
+        }
+
+        # Handle keys with an expire time set
+        if ($kttl > 0) {
+            $this->expire($dst, $kttl);
+        }
+
+        return (bool) $this->del($src);
+    }
+
+    /**
+     * Rename key ``$src`` to ``$dst`` if ``$dst`` doesn't already exist
+     *
+     * @param string $src the source set
+     * @param string $dst the destination set
+     *
+     * @return bool
+     */
+    private function _rc_renamenx($src, $dst)
+    {
+        if ($this->exists($dst)) {
+            return false;
+        }
+
+        return $this->rename($src, $dst);
+
     }
 
 }
