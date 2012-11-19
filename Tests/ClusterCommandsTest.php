@@ -1021,7 +1021,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
         // real logic
         $this->assertTrue($this->client->smove('a', 'b', 'a1'));
         $this->assertEquals($this->client->smembers('a'), array('a2'));
-        $this->assertEquals($this->client->smembers('b'), array('b1', 'b2', 'a1'));
+        $res = $this->client->smembers('b');
+        sort($res);
+        $this->assertEquals($res, array('a1', 'b1', 'b2'));
     }
 
     public function test_spop()
