@@ -225,7 +225,6 @@ class RedisCluster
                         $this->_redis->select($redisdb);
                     } catch (\RedisException $e) {
                         //if node is slave and is down, replace its connection with its master's
-                        $ms = array_search($alias, $this->cluster['master_of']);
                         if (!empty($ms) && ((!empty($info['role']) && $info['role'] == 'slave') || $cluster['nodes'][$ms] == $cluster['nodes'][$alias])) {
                             try {
                                 $this->_redis->pconnect($cluster['nodes'][$ms]['host'], $cluster['nodes'][$ms]['port']);
