@@ -72,7 +72,7 @@ class RedisCluster
                     'zrank' => 'zrank', 'zrevrange' => 'zrevrange',
                     'zrevrangebyscore' => 'zrevrangebyscore',
                     'zrevrank' => 'zrevrank', 'zscore' => 'zscore',
-                    'mget' => 'mget', 'bitcount' => 'bitcount', 'echo' => 'echo',
+                    'mget' => 'mget', 'bitcount' => 'bitcount', 'bitop' => 'bitop', 'echo' => 'echo',
                     'substr' => 'substr',
                     'getMultiple' => 'getMultiple',
                     'lSize' => 'lSize', 'lsize' => 'lsize', 'lGetRange' => 'lGetRange',
