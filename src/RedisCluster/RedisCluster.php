@@ -117,7 +117,7 @@ class RedisCluster
                     'zremrangebyscore' => 'zremrangebyscore', 'zunionstore' => 'zunionstore',
                     'mset' => 'mset','msetnx' => 'msetnx', 'rename' => 'rename',
                     'renamenx' => 'renamenx',
-                    'del' => 'del', 'ttl' => 'ttl', 'flushall' => 'flushall',
+                    'del' => 'del', 'ttl' => 'ttl', 'pttl' => 'pttl', 'flushall' => 'flushall',
                     'flushdb' => 'flushdb', 'renameKey' => 'renameKey',
                     'listTrim' => 'listTrim', 'lRemove' => 'lRemove', 'sRemove' => 'sRemove',
                     'setTimeout' => 'setTimeout', 'zDelete' => 'zDelete',
