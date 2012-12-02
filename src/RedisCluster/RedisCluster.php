@@ -192,25 +192,36 @@ class RedisCluster
         foreach ($cluster['nodes'] as $alias => $server) {
             $this->_redis = new \Redis();
             $info = null;
+            $ms = array_search($alias, $this->cluster['master_of']);
             try {
                 $this->_redis->pconnect($server['host'], $server['port']);
                 $info = $this->_redis->info();
-                if (in_array($alias, $slaves) && $info['role'] == 'master') {
-                    throw new \RedisException("RedisCluster: server " . $server['host'] .':'. $server['port'] . " is not a slave.");
+                if (empty($info['role'])) {
+                    error_log("SmartRedisCluster: server " . $server['host'] .':'. $server['port'] . " can't get info role.", 0);
+                    die;
+                }
+                elseif (!empty($ms) && $info['role'] == 'master' && $cluster['nodes'][$ms] != $cluster['nodes'][$alias]) {
+                    error_log("RedisCluster: server " . $server['host'] .':'. $server['port'] . " is not a slave.", 0);
+                    die;
                 }
                 $this->_redis->select($redisdb);
             } catch (\RedisException $e) {
                 try {
                     $this->_redis->pconnect($server['host'], $server['port']);
                     $info = $this->_redis->info();
-                    if (in_array($alias, $slaves) && $info['role'] == 'master') {
-                        throw new \RedisException("RedisCluster: server " . $server['host'] .':'. $server['port'] . " is not a slave.");
+                    if (empty($info['role'])) {
+                        error_log("SmartRedisCluster: server " . $server['host'] .':'. $server['port'] . " can't get info role.", 0);
+                        die;
+                    }
+                    elseif (!empty($ms) && $info['role'] == 'master' && $cluster['nodes'][$ms] != $cluster['nodes'][$alias]) {
+                        error_log("RedisCluster: server " . $server['host'] .':'. $server['port'] . " is not a slave.", 0);
+                        die;
                     }
                     $this->_redis->select($redisdb);
                 } catch (\RedisException $e) {
                     //if node is slave and is down, replace its connection with its master's
                     $ms = array_search($alias, $this->cluster['master_of']);
-                    if (!empty($ms) && ($info['role'] == 'slave' || $cluster['nodes'][$ms] == $cluster['nodes'][$alias])) {
+                    if (!empty($ms) && ((!empty($info['role']) && $info['role'] == 'slave') || $cluster['nodes'][$ms] == $cluster['nodes'][$alias])) {
                         try {
                             $this->_redis->pconnect($cluster['nodes'][$ms]['host'], $cluster['nodes'][$ms]['port']);
                             $this->_redis->select($redisdb);
@@ -220,11 +231,13 @@ class RedisCluster
                                 $this->_redis->select($redisdb);
                             } catch (\RedisException $e) {
                                 error_log("RedisCluster cannot connect to: " . $cluster['nodes'][$ms]['host'] .':'. $cluster['nodes'][$ms]['port'] . " " . $e->getMessage(), 0);
+                                die;
                             }
                         }
                         $this->_redises[$alias] =  $this->_redis;
                     } else {
                         error_log("RedisCluster cannot connect to: " . $server['host'] .':'. $server['port'] . " " . $e->getMessage(), 0);
+                        die;
                     }
                 }
             }
@@ -275,13 +288,13 @@ class RedisCluster
                 $hash_tag = key($args[0]);
                 if ($hash_tag !== NULL) {
                     if ($hash_tag === 0) {
-                        $tag_start = strrpos($args[0][0], '{');
+                        $tag_start = strripos($args[0][0], '{');
                     } else {
-                        $tag_start = strrpos($hash_tag, '{');
+                        $tag_start = strripos($hash_tag, '{');
                     }
                 }
             } else {
-                $tag_start = strrpos($args[0], '{');
+                $tag_start = strripos($args[0], '{');
             }
 
             // trigger error msg on tag keys unless we have hash tags e.g. "bar{zap}"
