@@ -53,9 +53,13 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
         $sizearr = array();
         $dbsize = $this->client->dbsize();
         foreach ($dbsize as $node => $size) {
-            if (!isset($sizearr[$cluster['nodes'][$node]['host'].$cluster['nodes'][$node]['port']]) && $size) {
+            if ($size && isset($this->client->cluster['nodes'][$node]) && !isset($sizearr[$this->client->cluster['nodes'][$node]['host'].$this->client->cluster['nodes'][$node]['port']])) {
                 $sizeno += $size;
-                $sizearr[$cluster['nodes'][$node]['host'].$cluster['nodes'][$node]['port']] = $size;
+                $sizearr[$this->client->cluster['nodes'][$node]['host'].$this->client->cluster['nodes'][$node]['port']] = $size;
+            }
+            if ($size && isset($this->client->cluster['slaves'][$node]) && !isset($sizearr[$this->client->cluster['slaves'][$node]['host'].$this->client->cluster['slaves'][$node]['port']])) {
+                $sizeno += $size;
+                $sizearr[$this->client->cluster['slaves'][$node]['host'].$this->client->cluster['slaves'][$node]['port']] = $size;
             }
         }
         $this->assertEquals($sizeno, 2 * count($sizearr));
@@ -137,9 +141,13 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
             if (!empty($info['db4'])) {
                 list($keys) = explode(',', $info['db4']);
                 list($k, $v) = explode('=', $keys);
-                if (!isset($knoarr[$cluster['nodes'][$node]['host'].$cluster['nodes'][$node]['port']]) && $v) {
+                if ($v && (isset($this->client->cluster['nodes'][$node]) && !isset($knoarr[$this->client->cluster['nodes'][$node]['host'].$this->client->cluster['nodes'][$node]['port']]))) {
                     $kno += $v;
-                    $knoarr[$cluster['nodes'][$node]['host'].$cluster['nodes'][$node]['port']] = $v;
+                    $knoarr[$this->client->cluster['nodes'][$node]['host'].$this->client->cluster['nodes'][$node]['port']] = $v;
+                }
+                if ($v && (isset($this->client->cluster['slaves'][$node]) && !isset($knoarr[$this->client->cluster['slaves'][$node]['host'].$this->client->cluster['slaves'][$node]['port']]))) {
+                    $kno += $v;
+                    $knoarr[$this->client->cluster['slaves'][$node]['host'].$this->client->cluster['slaves'][$node]['port']] = $v;
                 }
             }
         }

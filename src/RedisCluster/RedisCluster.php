@@ -180,77 +180,88 @@ class RedisCluster
     public function __construct($cluster, $redisdb = 0)
     {
         //die when wrong server array
-        if (empty($cluster['nodes']) || empty($cluster['master_of'])) {
+        if (empty($cluster['nodes'])) {
             error_log("RedisCluster: Please set a correct array of redis servers.", 0);
             die();
         }
 
         $this->cluster = $cluster;
-        $this->no_servers = count($cluster['master_of']);
-        $slaves = array_values($cluster['master_of']);
+        $this->no_servers = 0;
         $redises_cons = array();
 
         //connect to all servers
-        foreach ($cluster['nodes'] as $alias => $server) {
+        foreach ($this->cluster['nodes'] as $alias => $server) {
             if (isset($redises_cons[$server['host'] . ':' . $server['port']])) {
                 $this->_redises[$alias] = $redises_cons[$server['host'] . ':' . $server['port']];
             } else {
-                $this->_redis = new \Redis();
-                $info = null;
-                $ms = array_search($alias, $this->cluster['master_of']);
                 try {
-                    $this->_redis->pconnect($server['host'], $server['port']);
+                    //connect to master
+                    $this->_redis = self::_connect($server['host'], $server['port'], $redisdb);
                     $info = $this->_redis->info();
                     if (empty($info['role'])) {
-                        error_log("SmartRedisCluster: server " . $server['host'] .':'. $server['port'] . " can't get info role.", 0);
+                        error_log("RedisCluster: server " . $server['host'] .':'. $server['port'] . " can't get info role.", 0);
                         die;
+                    } elseif ($info['role'] != 'master') {
+                        error_log("RedisCluster: server " . $server['host'] .':'. $server['port'] . " is not a master.", 0);
+                        continue;
                     }
-                    elseif (!empty($ms) && $info['role'] == 'master' && $cluster['nodes'][$ms] != $cluster['nodes'][$alias]) {
-                        error_log("RedisCluster: server " . $server['host'] .':'. $server['port'] . " is not a slave.", 0);
-                        die;
-                    }
-                    $this->_redis->select($redisdb);
-                } catch (\RedisException $e) {
-                    try {
-                        $this->_redis->pconnect($server['host'], $server['port']);
-                        $info = $this->_redis->info();
-                        if (empty($info['role'])) {
-                            error_log("SmartRedisCluster: server " . $server['host'] .':'. $server['port'] . " can't get info role.", 0);
-                            die;
-                        }
-                        elseif (!empty($ms) && $info['role'] == 'master' && $cluster['nodes'][$ms] != $cluster['nodes'][$alias]) {
-                            error_log("RedisCluster: server " . $server['host'] .':'. $server['port'] . " is not a slave.", 0);
-                            die;
-                        }
-                        $this->_redis->select($redisdb);
-                    } catch (\RedisException $e) {
-                        //if node is slave and is down, replace its connection with its master's
-                        if (!empty($ms) && ((!empty($info['role']) && $info['role'] == 'slave') || $cluster['nodes'][$ms] == $cluster['nodes'][$alias])) {
+
+                    $this->_redises[$alias] =  $this->_redis;
+                    $redises_cons[$server['host'] . ':' . $server['port']] =  $this->_redis;
+                    $this->no_servers++;
+
+                    //connect to slave
+                    $slave_connected = false;
+                    if (!empty($info['connected_slaves'])) {
+                        @list($slave_host, $slave_port, $slave_online) = explode(',', $info['slave0']);
+                        if ($slave_online == 'online') {
                             try {
-                                $this->_redis->pconnect($cluster['nodes'][$ms]['host'], $cluster['nodes'][$ms]['port']);
-                                $this->_redis->select($redisdb);
+                                $redis_slave = self::_connect($slave_host, $slave_port, $redisdb);
+                                $this->_redises[$alias . '_slave'] =  $redis_slave;
+                                $redises_cons[$slave_host . ':' . $slave_port] =  $redis_slave;
+                                $this->cluster['slaves'][$alias . '_slave'] = array('host' => $slave_host, 'port' => $slave_port);
+                                $slave_connected = true;
                             } catch (\RedisException $e) {
-                                try {
-                                    $this->_redis->pconnect($cluster['nodes'][$ms]['host'], $cluster['nodes'][$ms]['port']);
-                                    $this->_redis->select($redisdb);
-                                } catch (\RedisException $e) {
-                                    error_log("RedisCluster cannot connect to: " . $cluster['nodes'][$ms]['host'] .':'. $cluster['nodes'][$ms]['port'] . " " . $e->getMessage(), 0);
-                                    die;
-                                }
+                                error_log("RedisCluster cannot connect to: " . $slave_host .':'. $slave_port . " " . $e->getMessage(), 0);
                             }
-                        } else {
-                            error_log("RedisCluster cannot connect to: " . $server['host'] .':'. $server['port'] . " " . $e->getMessage(), 0);
-                            die;
                         }
                     }
+
+                    if (!$slave_connected) {
+                        $this->_redises[$alias . '_slave'] =  $this->_redis;
+                        $redises_cons[$server['host'] . ':' . $server['port']] =  $this->_redis;
+                        $this->cluster['slaves'][$alias . '_slave'] = array('host' => $server['host'], 'port' => $server['port']);
+                    }
+
+                } catch (\RedisException $e) {
+                    error_log("RedisCluster cannot connect to: " . $server['host'] .':'. $server['port'] . " " . $e->getMessage(), 0);
+                    die;
                 }
-                $this->_redises[$alias] =  $this->_redis;
-                $redises_cons[$server['host'] . ':' . $server['port']] =  $this->_redis;
             }
         }
         unset($redises_cons);
     }
 
+    /**
+     * select a db on all the servers
+     *
+     * @param int $redisdb The redis db to be selected.
+     *
+     * @return void
+     */
+    private static function _connect($host, $port, $redisdb, $timeout = 0)
+    {
+        $redis = new \Redis();
+        try {
+            $redis->pconnect($host, $port, $timeout);
+            $redis->select($redisdb);
+        } catch (\RedisException $e) {
+            $redis->pconnect($host, $port, $timeout);
+            $redis->select($redisdb);
+        }
+
+        return $redis;
+    }
 
     /**
      * select a db on all the servers
@@ -266,12 +277,13 @@ class RedisCluster
             try {
                 $server->select($redisdb);
             } catch (\RedisException $e) {
-                error_log("RedisCluster setSelectDB : " . $e->getMessage(). " on " . $this->cluster['nodes'][$alias]['host'] . ':' . $this->cluster['nodes'][$alias]['port'] . "  db $redisdb", 0); die;
+                $addr = isset($this->cluster['nodes'][$alias]) ? $this->cluster['nodes'][$alias]['host'] . ':' . $this->cluster['nodes'][$alias]['port'] : $this->cluster['slaves'][$alias]['host'] . ':' . $this->cluster['slaves'][$alias]['port'];
+                error_log("RedisCluster setSelectDB : " . $e->getMessage(). " on " . $addr . "  db $redisdb", 0);
+                die;
             }
             $this->_redises[$alias] =  $server;
         }
     }
-
 
     /**
      * Magic method to handle all function requests
@@ -341,11 +353,10 @@ class RedisCluster
 
             //get the node number
             $node = $this->_getnodenamefor($hkey);
-            $redisent = $this->_redises[$this->cluster['default_node']];
             if (isset(self::$_write_keys[$name])) {
                 $redisent = $this->_redises[$node];
             } elseif (isset(self::$_read_keys[$name])) {
-                $redisent = $this->_redises[$this->cluster['master_of'][$node]];
+                $redisent = $this->_redises[$node . '_slave'];
             }
             // Execute the command on the server
             try {
@@ -354,12 +365,15 @@ class RedisCluster
                     return $redisent->$name($args[0]);
                 } elseif (2 == $argcount) {
                     return $redisent->$name($args[0], $args[1]);
+                } elseif (3 == $argcount) {
+                    return $redisent->$name($args[0], $args[1], $args[2]);
                 } else {
                     return call_user_func_array(array($redisent, $name), $args);
                 }
 
             } catch (\RedisException $e) {
-                error_log("RedisCluster: " . $e->getMessage()." on $name on " . $this->cluster['nodes'][$node]['host'] .':'. $this->cluster['nodes'][$node]['port'], 0);
+                $addr = isset($this->cluster['nodes'][$alias]) ? $this->cluster['nodes'][$alias]['host'] . ':' . $this->cluster['nodes'][$alias]['port'] : $this->cluster['slaves'][$alias]['host'] . ':' . $this->cluster['slaves'][$alias]['port'];
+                error_log("RedisCluster: " . $e->getMessage()." on $name on " . $addr, 0);
 
                 return null;
             }
@@ -368,13 +382,14 @@ class RedisCluster
             foreach ($this->_redises as $alias => $redisent) {
 
                 try {
-                    if (isset(self::$_write_keys[$name]) && !isset($this->cluster['master_of'][$alias])) {
+                    if (isset(self::$_write_keys[$name]) && stripos($alias, '_slave') !== false) {
                         $res = null;
                     } else {
                         $res = call_user_func_array(array($redisent, $name), $args);
                     }
                 } catch (\RedisException $e) {
-                    error_log("RedisCluster __call function: " . $e->getMessage() . " on $name on " . $this->cluster['nodes'][$alias]['host'] .':'. $this->cluster['nodes'][$alias]['port'], 0);
+                    $addr = isset($this->cluster['nodes'][$alias]) ? $this->cluster['nodes'][$alias]['host'] . ':' . $this->cluster['nodes'][$alias]['port'] : $this->cluster['slaves'][$alias]['host'] . ':' . $this->cluster['slaves'][$alias]['port'];
+                    error_log("RedisCluster __call function: " . $e->getMessage() . " on $name on " . $addr, 0);
                     $res = null;
                 }
                 if ($name == 'keys' || $name == 'getKeys') {
@@ -424,7 +439,7 @@ class RedisCluster
      */
     public function object($infotype, $key)
     {
-        $redisent = $this->_redises[$this->cluster['master_of'][$this->_getnodenamefor($key)]];
+        $redisent = $this->_redises[$this->_getnodenamefor($key) . '_slave'];
 
         return $redisent->object($infotype, $key);
     }

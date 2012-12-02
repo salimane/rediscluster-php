@@ -73,17 +73,7 @@ Getting Started
     php (       //masters
     php (       'node_1' => array('host' => '127.0.0.1', 'port' => 63791),
     php (       'node_2' => array('host' => '127.0.0.1', 'port' => 63792),
-    php (       //slaves
-    php (       'node_3' => array('host' => '127.0.0.1', 'port' => 63793),
-    php (       'node_4' => array('host' => '127.0.0.1', 'port' => 63794),
-    php (     ),
-    php (     //replication information
-    php (     'master_of' => array(
-    php (       'node_1' => 'node_4',  //node_4 slaveof node_1 in redis4.conf
-    php (       'node_2' => 'node_3',  // node_3 slaveof node_2 in redis3.conf
-    php (     ),
-    php ( 
-    php (     'default_node' => 'node_1'
+    php (     )
     php ( );
     php >
     php > $r = new RedisCluster\RedisCluster($cluster, 4);
@@ -105,8 +95,8 @@ the system to adjust the capacity while the system is running.
 Read Slaves & Write Masters
 ---------------------------
 
-``rediscluster`` uses master/slave mappings stored in the cluster hash passed during instantiation to 
-transparently relay read redis commands to slaves and writes commands to masters.
+``rediscluster`` uses the master servers stored in the cluster hash passed during instantiation to auto discover
+if any slave is attached to them. It then transparently relay read redis commands to slaves and writes commands to masters.
 
 Partitioning Algorithm
 ----------------------
