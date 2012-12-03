@@ -72,7 +72,7 @@ class RedisCluster
                     'zrank' => 'zrank', 'zrevrange' => 'zrevrange',
                     'zrevrangebyscore' => 'zrevrangebyscore',
                     'zrevrank' => 'zrevrank', 'zscore' => 'zscore',
-                    'mget' => 'mget', 'bitcount' => 'bitcount', 'bitop' => 'bitop', 'echo' => 'echo',
+                    'mget' => 'mget', 'bitcount' => 'bitcount', 'echo' => 'echo',
                     'substr' => 'substr',
                     'getMultiple' => 'getMultiple',
                     'lSize' => 'lSize', 'lsize' => 'lsize', 'lGetRange' => 'lGetRange',
@@ -116,7 +116,7 @@ class RedisCluster
                     'zrem' => 'zrem', 'zremrangebyrank' => 'zremrangebyrank',
                     'zremrangebyscore' => 'zremrangebyscore', 'zunionstore' => 'zunionstore',
                     'mset' => 'mset','msetnx' => 'msetnx', 'rename' => 'rename',
-                    'renamenx' => 'renamenx',
+                    'renamenx' => 'renamenx', 'bitop' => 'bitop',
                     'del' => 'del', 'ttl' => 'ttl', 'pttl' => 'pttl', 'flushall' => 'flushall',
                     'flushdb' => 'flushdb', 'renameKey' => 'renameKey',
                     'listTrim' => 'listTrim', 'lRemove' => 'lRemove', 'sRemove' => 'sRemove',
@@ -190,12 +190,12 @@ class RedisCluster
         $redises_cons = array();
 
         //connect to all servers
-        $loop_cnt = 0;
         foreach ($this->cluster['nodes'] as $alias => $server) {
-            if ($loop_cnt >= $this->no_servers) {
-                break;
+
+            if (isset($this->cluster['master_of']) && !isset($this->cluster['master_of'][$alias])) {
+                continue;
             }
-            ++$loop_cnt;
+
             if (isset($redises_cons[$server['host'] . ':' . $server['port']])) {
                 $this->_redises[$alias] = $redises_cons[$server['host'] . ':' . $server['port']]['master'];
                 $this->_redises[$alias . '_slave'] = $redises_cons[$server['host'] . ':' . $server['port']]['slave'];
@@ -285,7 +285,7 @@ class RedisCluster
             try {
                 $server->select($redisdb);
             } catch (\RedisException $e) {
-                $addr = isset($this->cluster['nodes'][$alias]) ? $this->cluster['nodes'][$alias]['host'] . ':' . $this->cluster['nodes'][$alias]['port'] : $this->cluster['slaves'][$alias]['host'] . ':' . $this->cluster['slaves'][$alias]['port'];
+                $addr = isset($this->cluster['nodes'][$alias]) ? $this->cluster['nodes'][$alias]['host'] . ':' . $this->cluster['nodes'][$alias]['port'] : $this->cluster['slaves'][$alias . '_slave']['host'] . ':' . $this->cluster['slaves'][$alias . '_slave']['port'];
                 error_log("RedisCluster setSelectDB : " . $e->getMessage(). " on " . $addr . "  db $redisdb", 0);
                 die;
             }
@@ -380,7 +380,7 @@ class RedisCluster
                 }
 
             } catch (\RedisException $e) {
-                $addr = isset($this->cluster['nodes'][$alias]) ? $this->cluster['nodes'][$alias]['host'] . ':' . $this->cluster['nodes'][$alias]['port'] : $this->cluster['slaves'][$alias]['host'] . ':' . $this->cluster['slaves'][$alias]['port'];
+                $addr = isset($this->cluster['nodes'][$node]) ? $this->cluster['nodes'][$node]['host'] . ':' . $this->cluster['nodes'][$node]['port'] : $this->cluster['slaves'][$node . '_slave']['host'] . ':' . $this->cluster['slaves'][$node . '_slave']['port'];
                 error_log("RedisCluster: " . $e->getMessage()." on $name on " . $addr, 0);
 
                 return null;
@@ -396,7 +396,7 @@ class RedisCluster
                         $res = call_user_func_array(array($redisent, $name), $args);
                     }
                 } catch (\RedisException $e) {
-                    $addr = isset($this->cluster['nodes'][$alias]) ? $this->cluster['nodes'][$alias]['host'] . ':' . $this->cluster['nodes'][$alias]['port'] : $this->cluster['slaves'][$alias]['host'] . ':' . $this->cluster['slaves'][$alias]['port'];
+                    $addr = isset($this->cluster['nodes'][$alias]) ? $this->cluster['nodes'][$alias]['host'] . ':' . $this->cluster['nodes'][$alias]['port'] : $this->cluster['slaves'][$alias . '_slave']['host'] . ':' . $this->cluster['slaves'][$alias . '_slave']['port'];
                     error_log("RedisCluster __call function: " . $e->getMessage() . " on $name on " . $addr, 0);
                     $res = null;
                 }
