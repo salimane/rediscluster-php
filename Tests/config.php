@@ -17,5 +17,5 @@ $cluster = array(
       //masters
       'node_1' => array('host' => '127.0.0.1', 'port' => 63791),
       'node_2' => array('host' => '127.0.0.1', 'port' => 63792),
-    ),
+    )
 );
