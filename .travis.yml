@@ -1,15 +1,20 @@
 language: php
 
+env:
+  global:
+    - REPO="salimane/rediscluster-php"
+    - CI_HOME=`pwd`/$REPO
+
 php:
   - 5.3
   - 5.4
-  
+
 before_script:
   - sh bin/travis-init.sh
-  
+
 services:
   - redis-server
-  
+
 notifications:
   email:
     recipients: me@salimane.com
