@@ -48,21 +48,8 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
     {
         global $cluster;
         $this->client->set('a', 'foo');
-        $this->client->set('b', 'foo');
-        $sizeno = 0;
-        $sizearr = array();
-        $dbsize = $this->client->dbsize();
-        foreach ($dbsize as $node => $size) {
-            if ($size && isset($this->client->cluster['nodes'][$node]) && !isset($sizearr[$this->client->cluster['nodes'][$node]['host'].$this->client->cluster['nodes'][$node]['port']])) {
-                $sizeno += $size;
-                $sizearr[$this->client->cluster['nodes'][$node]['host'].$this->client->cluster['nodes'][$node]['port']] = $size;
-            }
-            if ($size && isset($this->client->cluster['slaves'][$node]) && !isset($sizearr[$this->client->cluster['slaves'][$node]['host'].$this->client->cluster['slaves'][$node]['port']])) {
-                $sizeno += $size;
-                $sizearr[$this->client->cluster['slaves'][$node]['host'].$this->client->cluster['slaves'][$node]['port']] = $size;
-            }
-        }
-        $this->assertEquals($sizeno, 2 * count($sizearr));
+        $this->client->set('b', 'bar');
+        $this->assertEquals($this->client->dbsize(), 2);
     }
 
     public function test_getnodefor ()
@@ -96,8 +83,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
     public function test_hash_tag()
     {
         $this->client->set('bar{foo}', 'bar');
-        if (array_values($this->client->getnodefor('foo')) != array_values($this->client->getnodefor('bar')))
+        if (array_values($this->client->getnodefor('foo')) != array_values($this->client->getnodefor('bar'))) {
             $this->assertEquals($this->client->get('bar'), false);
+        }
         $this->assertEquals($this->client->get('bar{foo}'), 'bar');
         //checking bar on the right node
         $node = $this->client->getnodefor('foo');
@@ -119,8 +107,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
     public function test_config()
     {
         $mems = $this->client->config('GET', 'maxmemory');
-        foreach($mems as $data)
+        foreach ($mems as $data) {
             $this->assertTrue(is_numeric($data['maxmemory']));
+        }
     }
 
     public function test_echo()
@@ -132,7 +121,7 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
     {
         global $cluster;
         $this->client->set('a', 'foo');
-        $this->client->set('b', 'foo');
+        $this->client->set('b', 'bar');
         $kno = 0;
         $knoarr = array();
         $infos = $this->client->info();
@@ -145,20 +134,17 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
                     $kno += $v;
                     $knoarr[$this->client->cluster['nodes'][$node]['host'].$this->client->cluster['nodes'][$node]['port']] = $v;
                 }
-                if ($v && (isset($this->client->cluster['slaves'][$node]) && !isset($knoarr[$this->client->cluster['slaves'][$node]['host'].$this->client->cluster['slaves'][$node]['port']]))) {
-                    $kno += $v;
-                    $knoarr[$this->client->cluster['slaves'][$node]['host'].$this->client->cluster['slaves'][$node]['port']] = $v;
-                }
             }
         }
-        $this->assertEquals($kno, 2 * count($knoarr));
+        $this->assertEquals($kno, 2);
     }
 
     public function test_lastsave()
     {
         $datas = $this->client->lastsave();
-        foreach($datas as $data)
+        foreach ($datas as $data) {
             $this->assertTrue(is_integer($data));
+        }
     }
 
     public function test_object()
@@ -172,8 +158,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
     public function test_ping()
     {
         $datas = $this->client->ping();
-        foreach($datas as $data)
+        foreach ($datas as $data) {
             $this->assertEquals($data, '+PONG');
+        }
     }
 
     public function test_time()
@@ -181,8 +168,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
         $infos = $this->client->info();
         foreach ($infos as $info) {
             $version = $info['redis_version'];
-            if (version_compare($version, "2.5.0", "<"))
+            if (version_compare($version, "2.5.0", "<")) {
                 $this->markTestSkipped();
+            }
         }
         $times = $this->client->time();
         foreach ($times as  $t) {
@@ -261,8 +249,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
         $infos = $this->client->info();
         foreach ($infos as $info) {
             $version = $info['redis_version'];
-            if (version_compare($version, "2.5.0", "<"))
+            if (version_compare($version, "2.5.0", "<")) {
                 $this->markTestSkipped();
+            }
         }
 
         $this->assertEquals($this->client->pexpire('a', 10000), false);
@@ -278,8 +267,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
         $infos = $this->client->info();
         foreach ($infos as $info) {
             $version = $info['redis_version'];
-            if (version_compare($version, "2.5.0", "<"))
+            if (version_compare($version, "2.5.0", "<")) {
                 $this->markTestSkipped();
+            }
         }
 
         $expire_at = time() + 60;
@@ -313,8 +303,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
         $infos = $this->client->info();
         foreach ($infos as $info) {
             $version = $info['redis_version'];
-            if (version_compare($version, "2.5.0", "<"))
+            if (version_compare($version, "2.5.0", "<")) {
                 $this->markTestSkipped();
+            }
         }
 
         $this->client->setbit('a', 5, true);
@@ -339,8 +330,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
         $infos = $this->client->info();
         foreach ($infos as $info) {
             $version = $info['redis_version'];
-            if (version_compare($version, "2.6.0", "<"))
+            if (version_compare($version, "2.6.0", "<")) {
                 $this->markTestSkipped();
+            }
         }
 
         $this->client->set('a', '');
@@ -354,8 +346,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
         $infos = $this->client->info();
         foreach ($infos as $info) {
             $version = $info['redis_version'];
-            if (version_compare($version, "2.6.0", "<"))
+            if (version_compare($version, "2.6.0", "<")) {
                 $this->markTestSkipped();
+            }
         }
 
         $test_str = '\xAA\x00\xFF\x55';
@@ -371,8 +364,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
         $infos = $this->client->info();
         foreach ($infos as $info) {
             $version = $info['redis_version'];
-            if (version_compare($version, "2.6.0", "<"))
+            if (version_compare($version, "2.6.0", "<")) {
                 $this->markTestSkipped();
+            }
         }
 
         $test_str = '\xAA\x00\xFF\x55';
@@ -388,8 +382,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
         $infos = $this->client->info();
         foreach ($infos as $info) {
             $version = $info['redis_version'];
-            if (version_compare($version, "2.6.0", "<"))
+            if (version_compare($version, "2.6.0", "<")) {
                 $this->markTestSkipped();
+            }
         }
 
         $test_str = '\x01\x02\xFF';
@@ -408,8 +403,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
         $infos = $this->client->info();
         foreach ($infos as $info) {
             $version = $info['redis_version'];
-            if (version_compare($version, "2.6.0", "<"))
+            if (version_compare($version, "2.6.0", "<")) {
                 $this->markTestSkipped();
+            }
         }
 
         $this->client->set('a', '\x01\x02\xFF\xFF');
@@ -443,8 +439,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
         $infos = $this->client->info();
         foreach ($infos as $info) {
             $version = $info['redis_version'];
-            if (version_compare($version, "2.5.0", "<"))
+            if (version_compare($version, "2.5.0", "<")) {
                 $this->markTestSkipped();
+            }
         }
 
         $this->assertEquals($this->client->incrbyfloat('a', 1), 1.0);
@@ -455,14 +452,17 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
 
     public function test_keys()
     {
-        $this->markTestSkipped();
-
         $this->assertEquals($this->client->keys(), array());
         $keys = array('test_a', 'test_b', 'testc');
-        foreach($keys as $key)
+        foreach ($keys as $key) {
             $this->client->set($key, 1);
-        $this->assertEquals($this->client->keys('test_*'), $keys - array('testc'));
-        $this->assertEquals($this->client->keys('test*'), $keys);
+        }
+        $results = $this->client->keys('test_*');
+        sort($results);
+        $this->assertEquals($results, array('test_a', 'test_b'));
+        $results = $this->client->keys('test*');
+        sort($results);
+        $this->assertEquals($results, $keys);
     }
 
     public function test_mget()
@@ -487,8 +487,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
     {
         $d = array('a' => '1', 'b' => '2', 'c' => '3');
         $this->assertTrue($this->client->mset($d));
-        foreach($d as $k => $v)
+        foreach ($d as $k => $v) {
             $this->assertEquals($this->client->get($k), $v);
+        }
     }
 
     public function test_mset_mget_hash_tag()
@@ -506,8 +507,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->client->msetnx($d));
         $d2 = array('a' => 'x', 'd' => '4');
         $this->assertEquals($this->client->msetnx($d2), false);
-        foreach($d as $k => $v)
+        foreach ($d as $k => $v) {
             $this->assertEquals($this->client->get($k), $v);
+        }
         $this->assertEquals($this->client->get('d'), false);
     }
 
@@ -606,8 +608,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
     public function make_list($name, $l)
     {
         !is_array($l) && $l = str_split($l);
-        foreach($l as $i)
+        foreach ($l as $i) {
             $this->client->rpush($name, $i);
+        }
     }
 
     public function test_blpop()
@@ -890,8 +893,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
     public function make_set($name, $l)
     {
         !is_array($l) && $l = str_split($l);
-        foreach($l as $i)
+        foreach ($l as $i) {
             $this->client->sadd($name, $i);
+        }
     }
 
     public function test_sadd()
@@ -1117,8 +1121,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
     // SORTED SETS
     public function make_zset($name, $d)
     {
-        foreach($d as $k => $v)
+        foreach ($d as $k => $v) {
             $this->client->zadd($name, $v, $k);
+        }
     }
 
     public function test_zadd()
@@ -1368,8 +1373,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
     // HASHES
     public function make_hash($key, $d)
     {
-        foreach($d as $k => $v)
+        foreach ($d as $k => $v) {
             $this->client->hset($key, $k, $v);
+        }
     }
 
     public function test_hget_and_hset()
@@ -1509,8 +1515,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
         $infos = $this->client->info();
         foreach ($infos as $info) {
             $version = $info['redis_version'];
-            if (version_compare($version, "2.5.0", "<"))
+            if (version_compare($version, "2.5.0", "<")) {
                 $this->markTestSkipped();
+            }
         }
 
         // key is not a hash
@@ -1784,8 +1791,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
         //$this->assertEquals(sorted($this->client->keys('*')), sorted(dictkeys(mapping)))
 
         // check that it is possible to get list content by key name
-        foreach($mapping as $key => $value)
+        foreach ($mapping as $key => $value) {
             $this->assertEquals($this->client->lrange($key, 0, -1), $value);
+        }
     }
 
     public function test_large_responses()
@@ -1795,8 +1803,9 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
         $data = '';
         $ascii_letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $range = range(1, 5000000);
-        foreach($range as $i)// len(ascii_letters
+        foreach ($range as $i) {// len(ascii_letters
             $data .= $ascii_letters;
+        }
         $this->client->set('a', $data);
         $this->assertEquals($this->client->get('a'), $data);
     }

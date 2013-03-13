@@ -6,7 +6,7 @@
  * @package  RedisCluster
  * @author   (c) Salimane Adjao Moustapha <me@salimane.com>
  * @license  MIT http://www.opensource.org/licenses/mit-license.php
- * @version  GIT:258f9e4
+ * @version  0.5.1
  * @link     https://github.com/salimane/rediscluster-php
  */
 
@@ -73,12 +73,13 @@ class RedisCluster
                     'zrevrangebyscore' => 'zrevrangebyscore',
                     'zrevrank' => 'zrevrank', 'zscore' => 'zscore',
                     'mget' => 'mget', 'bitcount' => 'bitcount', 'echo' => 'echo',
-                    'substr' => 'substr',
-                    'getMultiple' => 'getMultiple',
+                    'substr' => 'substr', 'keys' => 'keys', 'randomkey' => 'randomkey',
+                    'dbsize' => 'dbsize',
+                    'getMultiple' => 'getMultiple', 'dbSize' => 'dbSize', 'randomKey' => 'randomKey',
                     'lSize' => 'lSize', 'lsize' => 'lsize', 'lGetRange' => 'lGetRange',
                     'sContains' => 'sContains', 'sSize' => 'sSize',
                     'sGetMembers' => 'sGetMembers',
-                    'zSize' => 'zSize',
+                    'zSize' => 'zSize', 'getkeys' => 'getkeys',
     );
 
     /**
@@ -161,13 +162,32 @@ class RedisCluster
     */
     private static $_loop_keys = array(
                     'keys' => 'keys', 'getkeys' => 'getkeys',
+                    'dbsize' => 'dbsize', 'dbSize' => 'dbSize',
+
                     'select' => 'select',
                     'save' => 'save', 'bgsave' => 'bgsave',
                     'bgrewriteaof' => 'bgrewriteaof',
-                    'dbsize' => 'dbsize', 'info' => 'info',
+                    'info' => 'info',
                     'lastsave' => 'lastsave', 'ping' => 'ping',
                     'flushall' => 'flushall', 'flushdb' => 'flushdb',
-                    'randomkey' => 'randomkey', 'sync' => 'sync',
+                    'sync' => 'sync',
+                    'config' => 'config', 'time' => 'time'
+    );
+
+    /**
+     * The admin type commands that could be sent to all the servers and
+     * return the aggregrate results
+     * @var array
+     * @access private
+     */
+    private static $_loop_keys_admin = array(
+                    'select' => 'select',
+                    'save' => 'save', 'bgsave' => 'bgsave',
+                    'bgrewriteaof' => 'bgrewriteaof',
+                    'info' => 'info',
+                    'lastsave' => 'lastsave', 'ping' => 'ping',
+                    'flushall' => 'flushall', 'flushdb' => 'flushdb',
+                    'sync' => 'sync',
                     'config' => 'config', 'time' => 'time'
     );
 
@@ -386,11 +406,28 @@ class RedisCluster
                 return null;
             }
         } else {
+
+            // take care of keys that don't need to go through master and slaves redis servers
+            if (!isset(self::$_loop_keys_admin[$name])) {
+                if (is_callable(array($this, "_rc_$name"))) {
+                    $name = "_rc_$name";
+                    $argcount = count($args);
+                    if (1 == $argcount) {
+                        return $this->$name($args[0]);
+                    } elseif (2 == $argcount) {
+                        return $this->$name($args[0], $args[1]);
+                    } else {
+                        return call_user_func_array(array($this, $name), $args);
+                    }
+                } else {
+                    throw new \RedisException("RedisCluster: Command $name Not Supported (each key name has its own node)");
+                }
+            }
+
             $result = array();
             foreach ($this->_redises as $alias => $redisent) {
-
                 try {
-                    if (isset(self::$_write_keys[$name]) && stripos($alias, '_slave') !== false) {
+                    if ((isset(self::$_write_keys[$name]) && stripos($alias, '_slave') !== false) || (isset(self::$_read_keys[$name]) && stripos($alias, '_slave') === false)) {
                         $res = null;
                     } else {
                         $res = call_user_func_array(array($redisent, $name), $args);
@@ -400,11 +437,7 @@ class RedisCluster
                     error_log("RedisCluster __call function: " . $e->getMessage() . " on $name on " . $addr, 0);
                     $res = null;
                 }
-                if ($name == 'keys' || $name == 'getKeys') {
-                    $result += $res;
-                } else {
-                    $result[$alias] = $res;
-                }
+                $result[$alias] = $res;
             }
 
             return $result;
@@ -613,7 +646,7 @@ class RedisCluster
      */
     private function _rc_smove($src, $dst, $value)
     {
-        if ($this->type($dst) == \Redis::REDIS_SET && $this->srem($src, $value)) {
+        if ($this->type($src) == \Redis::REDIS_SET && $this->type($dst) == \Redis::REDIS_SET  && $this->srem($src, $value)) {
             return (bool) $this->sadd($dst, $value);
         }
 
@@ -792,7 +825,48 @@ class RedisCluster
             return false;
         }
 
-        return $this->rename($src, $dst);
+        return $this->_rc_rename($src, $dst);
+
+    }
+
+    /**
+     * Returns a list of keys matching ``pattern``
+     *
+     * @param string $pattern the pattern
+     *
+     * @return array
+     */
+    private function _rc_keys($pattern = '*')
+    {
+        $result = array();
+        foreach ($this->_redises as $alias => $redisent) {
+            if (stripos($alias, '_slave') === false) {
+                continue;
+            }
+
+            $result = array_merge($result, $redisent->keys($pattern));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Returns a list of keys matching ``pattern``
+     *
+     * @return int
+     */
+    private function _rc_dbsize()
+    {
+        $result = 0;
+        foreach ($this->_redises as $alias => $redisent) {
+            if (stripos($alias, '_slave') === false) {
+                continue;
+            }
+
+            $result += $redisent->dbsize();
+        }
+
+        return $result;
 
     }
 
