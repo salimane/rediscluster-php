@@ -29,7 +29,7 @@ Create a ``composer.json`` file if you don't already have one in your projects r
 
     {
       "require": {
-        "rediscluster/rediscluster": "dev-master"
+        "rediscluster/rediscluster": "0.5.*"
       }
     }
 
