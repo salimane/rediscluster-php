@@ -6,7 +6,7 @@
  * @package  RedisCluster
  * @author   (c) Salimane Adjao Moustapha <me@salimane.com>
  * @license  MIT http://www.opensource.org/licenses/mit-license.php
- * @version  0.5.1
+ * @version  0.5.2
  * @link     https://github.com/salimane/rediscluster-php
  */
 
