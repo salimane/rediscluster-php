@@ -25,11 +25,11 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
 {
     protected $client;
 
-    public function get_client()
+    public function get_client($masters_only = false)
     {
         global $cluster;
 
-        return new RedisCluster\RedisCluster($cluster, 4);
+        return new RedisCluster\RedisCluster($cluster, 4, $masters_only);
     }
 
     public function setUp()
@@ -52,7 +52,20 @@ class ClusterCommandsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->client->dbsize(), 2);
     }
 
-    public function test_getnodefor ()
+    public function test_masters_only()
+    {
+        $client = $this->get_client(true);
+        foreach ($client->cluster['nodes'] as $alias => $server) {
+            if (isset($client->cluster['master_of']) && !isset($client->cluster['master_of'][$alias])) {
+                continue;
+            }
+
+            $this->assertEquals($client->cluster['nodes'][$alias], $client->cluster['slaves'][$alias.'_slave']);
+
+        }
+    }
+
+    public function test_getnodefor()
     {
         $this->client->set('bar', 'foo');
         $node = $this->client->getnodefor('bar');

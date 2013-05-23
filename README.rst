@@ -95,8 +95,17 @@ the system to adjust the capacity while the system is running.
 Read Slaves & Write Masters
 ---------------------------
 
-``rediscluster`` uses the master servers stored in the cluster hash passed during instantiation to auto discover
+``rediscluster``, by default, uses the master servers stored in the cluster hash passed during instantiation to auto discover
 if any slave is attached to them. It then transparently relay read redis commands to slaves and writes commands to masters.
+
+There is also support to only use masters even if read redis commands are issued, just specify it at client instantiation like :
+
+::
+
+    php > $r = new RedisCluster\RedisCluster($cluster, 4); // read redis commands are routed to slaves
+    ...
+    php > $r = new RedisCluster\RedisCluster($cluster, 4, true); // read redis commands are routed to masters
+    ...
 
 Partitioning Algorithm
 ----------------------

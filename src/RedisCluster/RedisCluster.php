@@ -59,27 +59,27 @@ class RedisCluster
      * @access private
      */
     private static $_read_keys = array(
-                    'debug' => 'debug', 'getbit' => 'getbit',
-                    'get' => 'get', 'getrange' => 'getrange', 'hget' => 'hget',
-                    'hgetall' => 'hgetall', 'hkeys' => 'hkeys', 'hlen' => 'hlen',
-                    'hmget' => 'hmget',
-                    'hvals' => 'hvals', 'lindex' => 'lindex', 'llen' => 'llen',
-                    'lrange' => 'lrange', 'object' => 'object',
-                    'scard' => 'scard', 'sismember' => 'sismember', 'smembers' => 'smembers',
-                    'srandmember' => 'srandmember', 'strlen' => 'strlen', 'type' => 'type',
-                    'zcard' => 'zcard', 'zcount' => 'zcount', 'zrange' => 'zrange',
-                    'zrangebyscore' => 'zrangebyscore',
-                    'zrank' => 'zrank', 'zrevrange' => 'zrevrange',
-                    'zrevrangebyscore' => 'zrevrangebyscore',
-                    'zrevrank' => 'zrevrank', 'zscore' => 'zscore',
-                    'mget' => 'mget', 'bitcount' => 'bitcount', 'echo' => 'echo',
-                    'substr' => 'substr', 'keys' => 'keys', 'randomkey' => 'randomkey',
-                    'dbsize' => 'dbsize',
-                    'getMultiple' => 'getMultiple', 'dbSize' => 'dbSize', 'randomKey' => 'randomKey',
-                    'lSize' => 'lSize', 'lsize' => 'lsize', 'lGetRange' => 'lGetRange',
-                    'sContains' => 'sContains', 'sSize' => 'sSize',
-                    'sGetMembers' => 'sGetMembers',
-                    'zSize' => 'zSize', 'getkeys' => 'getkeys',
+            'debug' => 'debug', 'getbit' => 'getbit',
+            'get' => 'get', 'getrange' => 'getrange', 'hget' => 'hget',
+            'hgetall' => 'hgetall', 'hkeys' => 'hkeys', 'hlen' => 'hlen',
+            'hmget' => 'hmget',
+            'hvals' => 'hvals', 'lindex' => 'lindex', 'llen' => 'llen',
+            'lrange' => 'lrange', 'object' => 'object',
+            'scard' => 'scard', 'sismember' => 'sismember', 'smembers' => 'smembers',
+            'srandmember' => 'srandmember', 'strlen' => 'strlen', 'type' => 'type',
+            'zcard' => 'zcard', 'zcount' => 'zcount', 'zrange' => 'zrange',
+            'zrangebyscore' => 'zrangebyscore',
+            'zrank' => 'zrank', 'zrevrange' => 'zrevrange',
+            'zrevrangebyscore' => 'zrevrangebyscore',
+            'zrevrank' => 'zrevrank', 'zscore' => 'zscore',
+            'mget' => 'mget', 'bitcount' => 'bitcount', 'echo' => 'echo',
+            'substr' => 'substr', 'keys' => 'keys', 'randomkey' => 'randomkey',
+            'dbsize' => 'dbsize',
+            'getMultiple' => 'getMultiple', 'dbSize' => 'dbSize', 'randomKey' => 'randomKey',
+            'lSize' => 'lSize', 'lsize' => 'lsize', 'lGetRange' => 'lGetRange',
+            'sContains' => 'sContains', 'sSize' => 'sSize',
+            'sGetMembers' => 'sGetMembers',
+            'zSize' => 'zSize', 'getkeys' => 'getkeys',
     );
 
     /**
@@ -88,43 +88,43 @@ class RedisCluster
      * @access private
     */
     private static $_write_keys = array(
-                    'append' => 'append', 'blpop' => 'blpop', 'brpop' => 'brpop',
-                    'brpoplpush' => 'brpoplpush',
-                    'decr' => 'decr', 'decrby' => 'decrby', 'del' => 'del',
-                    'exists' => 'exists', 'hexists' => 'hexists',
-                    'expire' => 'expire', 'expireat' => 'expireat', 'pexpire' => 'pexpire',
-                    'pexpireat' => 'pexpireat', 'getset' => 'getset', 'hdel' => 'hdel',
-                    'hincrby' => 'hincrby', 'hincrbyfloat' => 'hincrbyfloat', 'hset' => 'hset',
-                    'hsetnx' => 'hsetnx', 'hmset' => 'hmset',
-                    'incr' => 'incr', 'incrby' => 'incrby', 'incrbyfloat' => 'incrbyfloat',
-                    'linsert' => 'linsert', 'lpop' => 'lpop',
-                    'lpush' => 'lpush', 'lpushx' => 'lpushx', 'lrem' => 'lrem', 'lset' => 'lset',
-                    'ltrim' => 'ltrim', 'move' => 'move',
-                    'persist' => 'persist', 'publish' => 'publish', 'psubscribe' => 'psubscribe',
-                    'punsubscribe' => 'punsubscribe',
-                    'rpop' => 'rpop', 'rpoplpush' => 'rpoplpush', 'rpush' => 'rpush',
-                    'rpushx' => 'rpushx', 'sadd' => 'sadd', 'sdiff' => 'sdiff',
-                    'sdiffstore' => 'sdiffstore',
-                    'set' => 'set', 'setbit' => 'setbit', 'setex' => 'setex', 'setnx' => 'setnx',
-                    'setrange' => 'setrange', 'sinter' => 'sinter',
-                    'sinterstore' => 'sinterstore', 'smove' => 'smove',
-                    'sort' => 'sort', 'spop' => 'spop', 'srem' => 'srem',
-                    'subscribe' => 'subscribe',
-                    'sunion' => 'sunion', 'sunionstore' => 'sunionstore',
-                    'unsubscribe' => 'unsubscribe', 'unwatch' => 'unwatch',
-                    'watch' => 'watch', 'zadd' => 'zadd', 'zincrby' => 'zincrby',
-                    'zinterstore' => 'zinterstore',
-                    'zrem' => 'zrem', 'zremrangebyrank' => 'zremrangebyrank',
-                    'zremrangebyscore' => 'zremrangebyscore', 'zunionstore' => 'zunionstore',
-                    'mset' => 'mset','msetnx' => 'msetnx', 'rename' => 'rename',
-                    'renamenx' => 'renamenx', 'bitop' => 'bitop',
-                    'del' => 'del', 'ttl' => 'ttl', 'pttl' => 'pttl', 'flushall' => 'flushall',
-                    'flushdb' => 'flushdb', 'renameKey' => 'renameKey',
-                    'listTrim' => 'listTrim', 'lRemove' => 'lRemove', 'sRemove' => 'sRemove',
-                    'setTimeout' => 'setTimeout', 'zDelete' => 'zDelete',
-                    'zDeleteRangeByScore' => 'zDeleteRangeByScore', 'zDeleteRangeByRank' => 'zDeleteRangeByRank',
-                    'delete' => 'delete'
-    );
+            'append' => 'append', 'blpop' => 'blpop', 'brpop' => 'brpop',
+            'brpoplpush' => 'brpoplpush',
+            'decr' => 'decr', 'decrby' => 'decrby', 'del' => 'del',
+            'exists' => 'exists', 'hexists' => 'hexists',
+            'expire' => 'expire', 'expireat' => 'expireat', 'pexpire' => 'pexpire',
+            'pexpireat' => 'pexpireat', 'getset' => 'getset', 'hdel' => 'hdel',
+            'hincrby' => 'hincrby', 'hincrbyfloat' => 'hincrbyfloat', 'hset' => 'hset',
+            'hsetnx' => 'hsetnx', 'hmset' => 'hmset',
+            'incr' => 'incr', 'incrby' => 'incrby', 'incrbyfloat' => 'incrbyfloat',
+            'linsert' => 'linsert', 'lpop' => 'lpop',
+            'lpush' => 'lpush', 'lpushx' => 'lpushx', 'lrem' => 'lrem', 'lset' => 'lset',
+            'ltrim' => 'ltrim', 'move' => 'move',
+            'persist' => 'persist', 'publish' => 'publish', 'psubscribe' => 'psubscribe',
+            'punsubscribe' => 'punsubscribe',
+            'rpop' => 'rpop', 'rpoplpush' => 'rpoplpush', 'rpush' => 'rpush',
+            'rpushx' => 'rpushx', 'sadd' => 'sadd', 'sdiff' => 'sdiff',
+            'sdiffstore' => 'sdiffstore',
+            'set' => 'set', 'setbit' => 'setbit', 'setex' => 'setex', 'setnx' => 'setnx',
+            'setrange' => 'setrange', 'sinter' => 'sinter',
+            'sinterstore' => 'sinterstore', 'smove' => 'smove',
+            'sort' => 'sort', 'spop' => 'spop', 'srem' => 'srem',
+            'subscribe' => 'subscribe',
+            'sunion' => 'sunion', 'sunionstore' => 'sunionstore',
+            'unsubscribe' => 'unsubscribe', 'unwatch' => 'unwatch',
+            'watch' => 'watch', 'zadd' => 'zadd', 'zincrby' => 'zincrby',
+            'zinterstore' => 'zinterstore',
+            'zrem' => 'zrem', 'zremrangebyrank' => 'zremrangebyrank',
+            'zremrangebyscore' => 'zremrangebyscore', 'zunionstore' => 'zunionstore',
+            'mset' => 'mset','msetnx' => 'msetnx', 'rename' => 'rename',
+            'renamenx' => 'renamenx', 'bitop' => 'bitop',
+            'del' => 'del', 'ttl' => 'ttl', 'pttl' => 'pttl', 'flushall' => 'flushall',
+            'flushdb' => 'flushdb', 'renameKey' => 'renameKey',
+            'listTrim' => 'listTrim', 'lRemove' => 'lRemove', 'sRemove' => 'sRemove',
+            'setTimeout' => 'setTimeout', 'zDelete' => 'zDelete',
+            'zDeleteRangeByScore' => 'zDeleteRangeByScore', 'zDeleteRangeByRank' => 'zDeleteRangeByRank',
+            'delete' => 'delete'
+                    );
 
     /**
      * The commands that are not subject to hashing
@@ -132,10 +132,10 @@ class RedisCluster
      * @access private
     */
     private static $_dont_hash = array(
-                    'auth' => 'auth', 'monitor' => 'monitor', 'quit' => 'quit',
-                    'shutdown' => 'shutdown', 'slaveof' => 'slaveof', 'slowlog' => 'slowlog', 'sync' => 'sync',
-                    'discard' => 'discard', 'exec' => 'exec', 'multi' => 'multi',
-                    'setOption' => 'setOption', 'getOption' => 'getOption'
+            'auth' => 'auth', 'monitor' => 'monitor', 'quit' => 'quit',
+            'shutdown' => 'shutdown', 'slaveof' => 'slaveof', 'slowlog' => 'slowlog', 'sync' => 'sync',
+            'discard' => 'discard', 'exec' => 'exec', 'multi' => 'multi',
+            'setOption' => 'setOption', 'getOption' => 'getOption'
     );
 
     /**
@@ -145,14 +145,14 @@ class RedisCluster
      * @access private
     */
     private static $_tag_keys = array(
-                    'mget' => 'mget', 'rename' => 'rename', 'renamenx' => 'renamenx',
-                    'mset' => 'mset', 'msetnx' => 'msetnx',
-                    'brpoplpush' => 'brpoplpush', 'rpoplpush' => 'rpoplpush',
-                    'sdiff' => 'sdiff', 'sdiffstore' => 'sdiffstore',
-                    'sinter' => 'sinter', 'sinterstore' => 'sinterstore',
-                    'sunion' => 'sunion', 'sunionstore' => 'sunionstore',
-                    'smove' => 'smove', 'zinterstore' => 'zinterstore',
-                    'zunionstore' => 'zunionstore', 'sort' => 'sort'
+            'mget' => 'mget', 'rename' => 'rename', 'renamenx' => 'renamenx',
+            'mset' => 'mset', 'msetnx' => 'msetnx',
+            'brpoplpush' => 'brpoplpush', 'rpoplpush' => 'rpoplpush',
+            'sdiff' => 'sdiff', 'sdiffstore' => 'sdiffstore',
+            'sinter' => 'sinter', 'sinterstore' => 'sinterstore',
+            'sunion' => 'sunion', 'sunionstore' => 'sunionstore',
+            'smove' => 'smove', 'zinterstore' => 'zinterstore',
+            'zunionstore' => 'zunionstore', 'sort' => 'sort'
     );
 
     /**
@@ -162,17 +162,17 @@ class RedisCluster
      * @access private
     */
     private static $_loop_keys = array(
-                    'keys' => 'keys', 'getkeys' => 'getkeys',
-                    'dbsize' => 'dbsize', 'dbSize' => 'dbSize',
+            'keys' => 'keys', 'getkeys' => 'getkeys',
+            'dbsize' => 'dbsize', 'dbSize' => 'dbSize',
 
-                    'select' => 'select',
-                    'save' => 'save', 'bgsave' => 'bgsave',
-                    'bgrewriteaof' => 'bgrewriteaof',
-                    'info' => 'info',
-                    'lastsave' => 'lastsave', 'ping' => 'ping',
-                    'flushall' => 'flushall', 'flushdb' => 'flushdb',
-                    'sync' => 'sync',
-                    'config' => 'config', 'time' => 'time'
+            'select' => 'select',
+            'save' => 'save', 'bgsave' => 'bgsave',
+            'bgrewriteaof' => 'bgrewriteaof',
+            'info' => 'info',
+            'lastsave' => 'lastsave', 'ping' => 'ping',
+            'flushall' => 'flushall', 'flushdb' => 'flushdb',
+            'sync' => 'sync',
+            'config' => 'config', 'time' => 'time'
     );
 
     /**
@@ -180,16 +180,16 @@ class RedisCluster
      * return the aggregrate results
      * @var array
      * @access private
-     */
+    */
     private static $_loop_keys_admin = array(
-                    'select' => 'select',
-                    'save' => 'save', 'bgsave' => 'bgsave',
-                    'bgrewriteaof' => 'bgrewriteaof',
-                    'info' => 'info',
-                    'lastsave' => 'lastsave', 'ping' => 'ping',
-                    'flushall' => 'flushall', 'flushdb' => 'flushdb',
-                    'sync' => 'sync',
-                    'config' => 'config', 'time' => 'time'
+            'select' => 'select',
+            'save' => 'save', 'bgsave' => 'bgsave',
+            'bgrewriteaof' => 'bgrewriteaof',
+            'info' => 'info',
+            'lastsave' => 'lastsave', 'ping' => 'ping',
+            'flushall' => 'flushall', 'flushdb' => 'flushdb',
+            'sync' => 'sync',
+            'config' => 'config', 'time' => 'time'
     );
 
     /**
@@ -197,8 +197,9 @@ class RedisCluster
      *
      * @param array $cluster The Redis servers in the cluster.
      * @param int   $redisdb the db to be selected
+     * @param boolean $masters_only if read commands should also be routed to master servers
     */
-    public function __construct($cluster, $redisdb = 0)
+    public function __construct($cluster, $redisdb = 0, $masters_only = false)
     {
         //die when wrong server array
         if (empty($cluster['nodes'])) {
@@ -243,12 +244,14 @@ class RedisCluster
                     //connect to slave
                     $slave_connected = false;
                     $slave = array();
-                    if ($have_master_of) {
-                        $slave = $this->cluster['nodes'][$this->cluster['master_of'][$alias]];
-                    } elseif (!empty($info['connected_slaves'])) {
-                        @list($slave_host, $slave_port, $slave_online) = explode(',', $info['slave0']);
-                        if ($slave_online == 'online') {
-                            $slave = array('host' => $slave_host, 'port' => $slave_port);
+                    if (!$masters_only) {
+                        if ($have_master_of) {
+                            $slave = $this->cluster['nodes'][$this->cluster['master_of'][$alias]];
+                        } elseif (!empty($info['connected_slaves'])) {
+                            @list($slave_host, $slave_port, $slave_online) = explode(',', $info['slave0']);
+                            if ($slave_online == 'online') {
+                                $slave = array('host' => $slave_host, 'port' => $slave_port);
+                            }
                         }
                     }
 
