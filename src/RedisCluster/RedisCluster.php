@@ -227,7 +227,7 @@ class RedisCluster
                 try {
                     //connect to master
                     $this->_redis = self::_connect($server['host'], $server['port'], $redisdb);
-                    if (!$have_master_of) {
+                    if (!$masters_only && !$have_master_of) {
                         $info = $this->_redis->info();
                         if (empty($info['role'])) {
                             error_log("RedisCluster: server " . $server['host'] .':'. $server['port'] . " can't get info role.", 0);
