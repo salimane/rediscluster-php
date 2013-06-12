@@ -6,18 +6,18 @@ a PHP interface to a Cluster of Redis key-value stores.
 Project Goals
 -------------
 
-The goal of ``rediscluster-php``, together with `rediscluster-py <https://github.com/salimane/rediscluster-py.git>`_, 
+The goal of ``rediscluster-php``, together with `rediscluster-py <https://github.com/salimane/rediscluster-py.git>`_,
 is to have a consistent, compatible client libraries accross programming languages
-when sharding among different Redis instances in a transparent, fast, and 
+when sharding among different Redis instances in a transparent, fast, and
 fault tolerant way. ``rediscluster-php`` uses `phpredis <https://github.com/nicolasff/phpredis.git>`_
 when connecting to the redis servers, thus the original api commands would work without problems within
 the context of a cluster of redis servers.
 
-Travis CI
----------
+Continuous Integration
+------------------------------
 
-Currently, ``rediscluster-php`` is being tested via travis ci for php  
-version 5.3 and 5.4: |Build Status|
+Currently, ``rediscluster-php`` is being tested via travis/drone.io ci for php
+version 5.3 and 5.4: |Travis Status| |Drone.io Status|
 
 Installation
 ------------
@@ -65,7 +65,7 @@ Getting Started
 
     php -a
     Interactive shell
-    
+
     php > require "/home/salimane/htdocs/rediscluster-php/vendor/autoload.php";
     php > $cluster = array(
     php (     //node names
@@ -89,7 +89,7 @@ Cluster Configuration
 The cluster configuration is a hash that is mostly based on the idea of a node, which is simply a host:port pair
 that points to a single redis-server instance. This is to make sure it doesn’t get tied it
 to a specific host (or port).
-The advantage of this is that it is easy to add or remove nodes from 
+The advantage of this is that it is easy to add or remove nodes from
 the system to adjust the capacity while the system is running.
 
 Read Slaves & Write Masters
@@ -113,7 +113,7 @@ Partitioning Algorithm
 In order to map every given key to the appropriate Redis node, the algorithm used, based on crc32 and modulo, is :
 
 ::
-    
+
     ((abs(crc32(<key>)) % <number of masters>) + 1)
 
 
@@ -129,16 +129,16 @@ A function ``getnodefor`` is provided to get the node a particular key will be/h
                 [host] => 127.0.0.1
                 [port] => 63792
             )
-    
+
     )
-    php >     
+    php >
 
 Hash Tags
 -----------
 
-In order to specify your own hash key (so that related keys can all land 
+In order to specify your own hash key (so that related keys can all land
 on a given node), ``rediscluster`` allows you to pass a string  in the form "a{b}" where you’d normally pass a scalar.
-The first element of the list is the key to use for the hash and the 
+The first element of the list is the key to use for the hash and the
 second is the real key that should be fetched/modify:
 
 ::
@@ -155,9 +155,9 @@ the key that is fetched from the redis node that “foo” hashes to.
 Multiple Keys Redis Commands
 ----------------------------
 
-In the context of storing an application data accross many redis servers, commands taking multiple keys 
-as arguments are harder to use since, if the two keys will hash to two different 
-instances, the operation can not be performed. Fortunately, rediscluster is a little fault tolerant 
+In the context of storing an application data accross many redis servers, commands taking multiple keys
+as arguments are harder to use since, if the two keys will hash to two different
+instances, the operation can not be performed. Fortunately, rediscluster is a little fault tolerant
 in that it still fetches the right result for those multi keys operations as far as the client is concerned.
 To do so it processes the related involved redis servers at interface level.
 
@@ -174,7 +174,7 @@ To do so it processes the related involved redis servers at interface level.
         [0] => a1
         [1] => a3
     )
-    php > 
+    php >
     php > print_r($r->getnodefor('foo'));
     Array
     (
@@ -183,7 +183,7 @@ To do so it processes the related involved redis servers at interface level.
                 [host] => 127.0.0.1
                 [port] => 63792
             )
-    
+
     )
     php > print_r($r->getnodefor('bar'));
     Array
@@ -193,7 +193,7 @@ To do so it processes the related involved redis servers at interface level.
                 [host] => 127.0.0.1
                 [port] => 63791
             )
-    
+
     )
     php > print_r($r->getnodefor('foobar'));
     Array
@@ -203,16 +203,16 @@ To do so it processes the related involved redis servers at interface level.
                 [host] => 127.0.0.1
                 [port] => 63792
             )
-    
+
     )
-    php > 
+    php >
 
 
 Redis-Sharding & Redis-Copy
 ---------------------------
 
 In order to help with moving an application with a single redis server to a cluster of redis servers
-that could take advantage of ``rediscluster``, i wrote `redis-sharding <https://github.com/salimane/redis-tools#redis-sharding>`_ 
+that could take advantage of ``rediscluster``, i wrote `redis-sharding <https://github.com/salimane/redis-tools#redis-sharding>`_
 and `redis-copy <https://github.com/salimane/redis-tools#redis-copy>`_
 
 Information
@@ -229,5 +229,7 @@ Author
 (me@salimane.com). It can be found here:
 http://github.com/salimane/rediscluster-php
 
-.. |Build Status| image:: https://secure.travis-ci.org/salimane/rediscluster-php.png?branch=master
+.. |Travis Status| image:: https://secure.travis-ci.org/salimane/rediscluster-php.png?branch=master
    :target: http://travis-ci.org/salimane/rediscluster-php
+.. |Drone.io Status| image:: https://drone.io/github.com/salimane/rediscluster-php/status.png
+   :target: https://drone.io/github.com/salimane/rediscluster-php/latest
