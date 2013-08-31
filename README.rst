@@ -233,3 +233,8 @@ http://github.com/salimane/rediscluster-php
    :target: http://travis-ci.org/salimane/rediscluster-php
 .. |Drone.io Status| image:: https://drone.io/github.com/salimane/rediscluster-php/status.png
    :target: https://drone.io/github.com/salimane/rediscluster-php/latest
+
+.. image:: https://d2weczhvl823v0.cloudfront.net/salimane/rediscluster-php/trend.png
+   :alt: Bitdeli badge
+   :target: https://bitdeli.com/free
+
